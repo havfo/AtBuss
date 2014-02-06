@@ -13,12 +13,15 @@ public class BusStop {
 	private int distance = 0;
 
 	private int direction = 0;
+	
+	private int numUsed;
 
-	public BusStop(int id, String name, double latitude, double longitude) {
+	public BusStop(int id, String name, double latitude, double longitude, int numUsed) {
 		this.id = id;
 		this.name = name;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.numUsed = numUsed;
 	}
 
 	public int getId() {
@@ -67,5 +70,13 @@ public class BusStop {
 
 	public void setDirection(int direction) {
 		this.direction = direction;
+	}
+
+	public int getNumUsed() {
+		return numUsed;
+	}
+
+	public void setNumUsed(int numUsed) {
+		this.numUsed = numUsed;
 	}
 }

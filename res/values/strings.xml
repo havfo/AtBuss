@@ -21,5 +21,5 @@
     <string name="ask_oracle">Spør</string>
     <string name="title_activity_settings">Innstillinger</string>
     <string name="title_activity_ask_oracle">Spør Orakelet</string>
-
+    <string name="title_activity_main">AtBuss</string>
 </resources>

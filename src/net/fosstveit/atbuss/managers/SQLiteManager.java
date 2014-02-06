@@ -18,12 +18,14 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	private static final String STOPS_KEY_NAME = "name";
 	private static final String STOPS_KEY_LATITUDE = "latitude";
 	private static final String STOPS_KEY_LONGITUDE = "longitude";
+	private static final String STOPS_KEY_NUMUSED = "numused";
 	private static final String[] STOPS_COLUMNS = { STOPS_KEY_ID,
-			STOPS_KEY_NAME, STOPS_KEY_LATITUDE, STOPS_KEY_LONGITUDE };
+			STOPS_KEY_NAME, STOPS_KEY_LATITUDE, STOPS_KEY_LONGITUDE,
+			STOPS_KEY_NUMUSED };
 	private static final String CREATE_STOPS_TABLE = "CREATE TABLE "
 			+ TABLE_STOPS + " (" + STOPS_KEY_ID + " INTEGER PRIMARY KEY, "
 			+ STOPS_KEY_NAME + " TEXT, " + STOPS_KEY_LATITUDE + " REAL, "
-			+ STOPS_KEY_LONGITUDE + " REAL)";
+			+ STOPS_KEY_LONGITUDE + " REAL, " + STOPS_KEY_NUMUSED + " INTEGER)";
 
 	private static final String TABLE_VERSION = "version";
 	private static final String VERSION_KEY_ID = "id";
@@ -59,10 +61,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
 		values.put(STOPS_KEY_NAME, stop.getName());
 		values.put(STOPS_KEY_LATITUDE, stop.getLatitude());
 		values.put(STOPS_KEY_LONGITUDE, stop.getLongitude());
+		values.put(STOPS_KEY_NUMUSED, 0);
 		db.insert(TABLE_STOPS, null, values);
 		db.close();
 	}
-	
+
 	public void addBusStop(String id, String name, String lat, String lon) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
@@ -70,10 +73,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
 		values.put(STOPS_KEY_NAME, name);
 		values.put(STOPS_KEY_LATITUDE, lat);
 		values.put(STOPS_KEY_LONGITUDE, lon);
+		values.put(STOPS_KEY_NUMUSED, 0);
 		db.insert(TABLE_STOPS, null, values);
 		db.close();
 	}
-	
+
 	public void addBusStops(String[] stops) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
@@ -84,6 +88,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 			values.put(STOPS_KEY_NAME, tmp[1]);
 			values.put(STOPS_KEY_LATITUDE, tmp[2]);
 			values.put(STOPS_KEY_LONGITUDE, tmp[3]);
+			values.put(STOPS_KEY_NUMUSED, 0);
 			db.insert(TABLE_STOPS, null, values);
 			values.clear();
 		}
@@ -91,14 +96,14 @@ public class SQLiteManager extends SQLiteOpenHelper {
 		db.endTransaction();
 		db.close();
 	}
-	
+
 	public void clearBusStops() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_STOPS);
 		db.execSQL(CREATE_STOPS_TABLE);
 		db.close();
 	}
-	
+
 	public void addBusStops(ArrayList<BusStop> stops) {
 		for (BusStop stop : stops) {
 			addBusStop(stop);
@@ -122,7 +127,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
 			BusStop stop = new BusStop(Integer.parseInt(cursor.getString(0)),
 					cursor.getString(1),
 					Double.parseDouble(cursor.getString(2)),
-					Double.parseDouble(cursor.getString(3)));
+					Double.parseDouble(cursor.getString(3)),
+					Integer.parseInt(cursor.getString(4)));
 
 			return stop;
 		} else {
@@ -145,14 +151,37 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public ArrayList<BusStop> getAllBusStops() {
 		ArrayList<BusStop> stops = new ArrayList<BusStop>();
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, null, null, null, null, null, null);
+		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, null, null, null,
+				null, null, null);
 		BusStop stop = null;
 		if (cursor != null && cursor.moveToFirst()) {
 			do {
 				stop = new BusStop(Integer.parseInt(cursor.getString(0)),
 						cursor.getString(1), Double.parseDouble(cursor
 								.getString(2)), Double.parseDouble(cursor
-								.getString(3)));
+								.getString(3)), Integer.parseInt(cursor
+								.getString(4)));
+
+				stops.add(stop);
+			} while (cursor.moveToNext());
+		}
+
+		return stops;
+	}
+	
+	public ArrayList<BusStop> getMostUsedBusStops(int count) {
+		ArrayList<BusStop> stops = new ArrayList<BusStop>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, null, null, null,
+				null, STOPS_KEY_NUMUSED + " DESC", "" + count);
+		BusStop stop = null;
+		if (cursor != null && cursor.moveToFirst()) {
+			do {
+				stop = new BusStop(Integer.parseInt(cursor.getString(0)),
+						cursor.getString(1), Double.parseDouble(cursor
+								.getString(2)), Double.parseDouble(cursor
+								.getString(3)), Integer.parseInt(cursor
+								.getString(4)));
 
 				stops.add(stop);
 			} while (cursor.moveToNext());
@@ -167,7 +196,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 		values.put(STOPS_KEY_NAME, stop.getName());
 		values.put(STOPS_KEY_LATITUDE, stop.getLatitude());
 		values.put(STOPS_KEY_LONGITUDE, stop.getLongitude());
-
+		values.put(STOPS_KEY_NUMUSED, stop.getNumUsed());
 		int i = db.update(TABLE_STOPS, values, STOPS_KEY_ID + " = ?",
 				new String[] { String.valueOf(stop.getId()) });
 		db.close();

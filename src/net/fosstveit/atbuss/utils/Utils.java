@@ -1,6 +1,6 @@
 package net.fosstveit.atbuss.utils;
 
-import net.fosstveit.atbuss.AtBussActivity;
+import net.fosstveit.atbuss.MainActivity;
 import net.fosstveit.atbuss.objects.BusEvent;
 
 import org.apache.http.HttpEntity;
@@ -43,7 +43,7 @@ public class Utils {
 
 			String[] values = result.split("<spl>", -1);
 			
-			AtBussActivity.sqliteManager.addBusStops(values);
+			MainActivity.sqliteManager.addBusStops(values);
 
 			// for (int i = 0; i < values.length; i++) {
 			// String[] tmp = values[i].split("<ln>", -1);
@@ -80,7 +80,7 @@ public class Utils {
 
 			result = result.replace("\n", "").replace("\r", "");
 
-			AtBussActivity.sqliteManager.addVersion(result);
+			MainActivity.sqliteManager.addVersion(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

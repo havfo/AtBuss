@@ -20,6 +20,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
@@ -43,9 +44,9 @@ public class BusStopActivity extends SherlockActivity {
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			stopName = (String) extras.get(AtBussActivity.BUS_STOP_NAME);
+			stopName = (String) extras.get(MainActivity.BUS_STOP_NAME);
 			setTitle(stopName);
-			stopId = (int) extras.getInt(AtBussActivity.BUS_STOP_ID);
+			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
 		}
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,16 +68,22 @@ public class BusStopActivity extends SherlockActivity {
 					BusEventActivity.class);
 			BusEvent b = (BusEvent) listSelectEvent.getItemAtPosition(i);
 
-			intent.putExtra(AtBussActivity.BUS_STOP_NAME, stopName);
-			intent.putExtra(AtBussActivity.BUS_STOP_ID, stopId);
-			intent.putExtra(AtBussActivity.BUS_ROUTE_NAME, b.getRoute());
-			intent.putExtra(AtBussActivity.BUS_ROUTE_TIME, b.getTime());
-			intent.putExtra(AtBussActivity.BUS_ROUTE_SCHED, b.getSched());
+			intent.putExtra(MainActivity.BUS_STOP_NAME, stopName);
+			intent.putExtra(MainActivity.BUS_STOP_ID, stopId);
+			intent.putExtra(MainActivity.BUS_ROUTE_NAME, b.getRoute());
+			intent.putExtra(MainActivity.BUS_ROUTE_TIME, b.getTime());
+			intent.putExtra(MainActivity.BUS_ROUTE_SCHED, b.getSched());
 
 			startActivity(intent);
 		}
 	};
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.activity_at_buss, menu);
+		return true;
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

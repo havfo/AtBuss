@@ -61,8 +61,12 @@ public class SearchActivity extends SherlockActivity {
 			Intent intent = new Intent(SearchActivity.this,
 					BusStopActivity.class);
 			BusStop b = (BusStop) searchList.getItemAtPosition(i);
-			intent.putExtra(AtBussActivity.BUS_STOP_ID, b.getId());
-			intent.putExtra(AtBussActivity.BUS_STOP_NAME, b.getName());
+			
+			b.setNumUsed(b.getNumUsed() + 1);
+			MainActivity.sqliteManager.updateBusStop(b);
+			
+			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
+			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
 			startActivity(intent);
 		}
 	};
