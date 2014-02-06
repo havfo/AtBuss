@@ -1,1 +1,9 @@
 AtBuss is an Android app for showing real time info about buses in Trondheim, Norway.
+
+Android API version 7 (2.1) and up are supported.
+
+To build it, you need json-simple:
+http://code.google.com/p/json-simple/
+
+And ActionBarSherlock:
+http://actionbarsherlock.com/
