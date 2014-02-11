@@ -1,9 +1,14 @@
-package net.fosstveit.atbuss;
+package net.fosstveit.atbuss.fragments;
 
 import java.util.ArrayList;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
+import net.fosstveit.atbuss.BusStopActivity;
+import net.fosstveit.atbuss.MainActivity;
+import net.fosstveit.atbuss.R;
+import net.fosstveit.atbuss.R.id;
+import net.fosstveit.atbuss.R.layout;
 import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.BusStopAdapter;
 import android.content.Intent;
@@ -28,7 +33,7 @@ public class MostUsedFragment extends SherlockFragment {
 				Boolean.TRUE);
 
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
-				R.layout.activity_at_buss, container, false);
+				R.layout.fragment_at_buss, container, false);
 
 		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
 		listSelectStop.setOnItemClickListener(busStopSelected);

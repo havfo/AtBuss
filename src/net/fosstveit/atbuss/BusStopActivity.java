@@ -1,154 +1,95 @@
 package net.fosstveit.atbuss;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import net.fosstveit.atbuss.R;
+import net.fosstveit.atbuss.R.id;
+import net.fosstveit.atbuss.R.layout;
+import net.fosstveit.atbuss.R.menu;
+import net.fosstveit.atbuss.utils.BusStopViewPagerAdapter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+import android.support.v4.view.ViewPager;
 
-import net.fosstveit.atbuss.objects.BusEvent;
-import net.fosstveit.atbuss.utils.BusEventEntryAdapter;
-import net.fosstveit.atbuss.utils.Utils;
-
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
-public class BusStopActivity extends SherlockActivity {
+public class BusStopActivity extends SherlockFragmentActivity {
 
-	private ListView listSelectEvent;
-	private BusEventEntryAdapter busEventEntryAdapter;
-	private String stopName;
-	private int stopId;
-	private TimerTask doAsynchronousTask;
-	private SharedPreferences sharedPrefs;
-
+	private ActionBar mActionBar;
+	private ViewPager mPager;
+	private Tab tab;
+	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_bus_stop);
 
-		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		mActionBar = getSupportActionBar();
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			stopName = (String) extras.get(MainActivity.BUS_STOP_NAME);
-			setTitle(stopName);
-			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
-		}
+		mPager = (ViewPager) findViewById(R.id.busstopspager);
 
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		FragmentManager fm = getSupportFragmentManager();
 
-		listSelectEvent = (ListView) findViewById(R.id.listBusEvents);
-		listSelectEvent.setOnItemClickListener(busEventSelected);
+		ViewPager.SimpleOnPageChangeListener ViewPagerListener = new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				super.onPageSelected(position);
+				mActionBar.setSelectedNavigationItem(position);
+			}
+		};
 
-		busEventEntryAdapter = new BusEventEntryAdapter(this,
-				R.layout.bus_stop_list_item);
-		listSelectEvent.setAdapter(busEventEntryAdapter);
+		mPager.setOnPageChangeListener(ViewPagerListener);
+		BusStopViewPagerAdapter viewpageradapter = new BusStopViewPagerAdapter(fm);
+		mPager.setAdapter(viewpageradapter);
 
-		getBusEvents();
+		// Capture tab button clicks
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+			@Override
+			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+				mPager.setCurrentItem(tab.getPosition());
+			}
+
+			@Override
+			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			}
+
+			@Override
+			public void onTabReselected(Tab tab, FragmentTransaction ft) {
+			}
+		};
+
+		// Create first Tab
+		tab = mActionBar.newTab().setText("Sanntid")
+				.setTabListener(tabListener);
+		mActionBar.addTab(tab);
+
+		// Create second Tab
+		tab = mActionBar.newTab().setText("Info")
+				.setTabListener(tabListener);
+		mActionBar.addTab(tab);
 	}
 
-	private OnItemClickListener busEventSelected = new OnItemClickListener() {
-		@Override
-		public void onItemClick(AdapterView<?> av, View v, int i, long l) {
-			Intent intent = new Intent(BusStopActivity.this,
-					BusEventActivity.class);
-			BusEvent b = (BusEvent) listSelectEvent.getItemAtPosition(i);
-
-			intent.putExtra(MainActivity.BUS_STOP_NAME, stopName);
-			intent.putExtra(MainActivity.BUS_STOP_ID, stopId);
-			intent.putExtra(MainActivity.BUS_ROUTE_NAME, b.getRoute());
-			intent.putExtra(MainActivity.BUS_ROUTE_TIME, b.getTime());
-			intent.putExtra(MainActivity.BUS_ROUTE_SCHED, b.getSched());
-
-			startActivity(intent);
-		}
-	};
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_at_buss, menu);
-		return true;
-	}
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			doAsynchronousTask.cancel();
-			doAsynchronousTask = null;
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void getBusEvents() {
-		final Handler handler = new Handler();
-		Timer timer = new Timer();
-
-		doAsynchronousTask = new TimerTask() {
-			@Override
-			public void run() {
-				handler.post(new Runnable() {
-					public void run() {
-						try {
-							GetBusEvents getBusEvents = new GetBusEvents();
-							getBusEvents.execute();
-						} catch (Exception e) {
-						}
-					}
-				});
-			}
-		};
-
-		timer.schedule(doAsynchronousTask, 0, 30000);
-	}
-
-	private class GetBusEvents extends AsyncTask<String, Void, String> {
-
-		private BusEvent[] events;
-
-		@Override
-		protected void onPreExecute() {
-			setProgressBarIndeterminateVisibility(Boolean.TRUE);
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-			int numStops = Integer.parseInt(sharedPrefs.getString(
-					"Sanntidsdata", "15"));
-			events = Utils.getBusTime(stopId, numStops);
-			return "Done";
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			busEventEntryAdapter.clear();
-
-			if (events != null) {
-				for (int i = 0; i < events.length; i++) {
-					busEventEntryAdapter.add(events[i]);
-				}
-			} else {
-				busEventEntryAdapter.add(new BusEvent("Ingen ruter", "", "",
-						"", 0));
-			}
-
-			setProgressBarIndeterminateVisibility(Boolean.FALSE);
-		}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.activity_bus_stop, menu);
+		return true;
 	}
 }

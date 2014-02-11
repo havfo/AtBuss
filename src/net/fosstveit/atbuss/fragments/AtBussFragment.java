@@ -1,10 +1,13 @@
-package net.fosstveit.atbuss;
+package net.fosstveit.atbuss.fragments;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.fosstveit.atbuss.BusStopActivity;
+import net.fosstveit.atbuss.MainActivity;
+import net.fosstveit.atbuss.R;
 import net.fosstveit.atbuss.interfaces.CompassCallback;
 import net.fosstveit.atbuss.interfaces.GPSCallback;
 import net.fosstveit.atbuss.managers.CompassManager;
@@ -49,7 +52,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 				Boolean.TRUE);
 
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
-				R.layout.activity_at_buss, container, false);
+				R.layout.fragment_at_buss, container, false);
 
 		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
 		listSelectStop.setOnItemClickListener(busStopSelected);

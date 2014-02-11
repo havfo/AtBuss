@@ -1,15 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ListView
-        android:id="@+id/listBusEvents"
+    android:layout_height="match_parent" >
+ 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/busstopspager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true">
-
-    </ListView>
-
+        android:layout_height="match_parent" />
+ 
 </RelativeLayout>

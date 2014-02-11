@@ -9,6 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.fosstveit.atbuss.R;
+import net.fosstveit.atbuss.R.id;
+import net.fosstveit.atbuss.R.layout;
 import net.fosstveit.atbuss.utils.BusEventAlarm;
 
 import java.util.Calendar;

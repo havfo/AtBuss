@@ -14,6 +14,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import net.fosstveit.atbuss.R;
+import net.fosstveit.atbuss.R.id;
+import net.fosstveit.atbuss.R.layout;
 import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.BusStopAdapter;
 

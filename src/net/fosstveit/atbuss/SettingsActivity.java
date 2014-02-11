@@ -1,5 +1,8 @@
 package net.fosstveit.atbuss;
 
+import net.fosstveit.atbuss.R;
+import net.fosstveit.atbuss.R.xml;
+
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 

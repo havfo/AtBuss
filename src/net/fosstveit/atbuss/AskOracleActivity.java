@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import net.fosstveit.atbuss.R;
+import net.fosstveit.atbuss.R.id;
+import net.fosstveit.atbuss.R.layout;
 import net.fosstveit.atbuss.utils.Utils;
 
 public class AskOracleActivity extends SherlockActivity {

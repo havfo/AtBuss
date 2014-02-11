@@ -1,10 +1,11 @@
 package net.fosstveit.atbuss;
 
 import java.util.ArrayList;
+
 import net.fosstveit.atbuss.managers.SQLiteManager;
 import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.Utils;
-import net.fosstveit.atbuss.utils.ViewPagerAdapter;
+import net.fosstveit.atbuss.utils.AtBussViewPagerAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -58,7 +59,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		mActionBar = getSupportActionBar();
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		mPager = (ViewPager) findViewById(R.id.pager);
+		mPager = (ViewPager) findViewById(R.id.atbusspager);
 
 		FragmentManager fm = getSupportFragmentManager();
 
@@ -71,7 +72,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		};
 
 		mPager.setOnPageChangeListener(ViewPagerListener);
-		ViewPagerAdapter viewpageradapter = new ViewPagerAdapter(fm);
+		AtBussViewPagerAdapter viewpageradapter = new AtBussViewPagerAdapter(fm);
 		mPager.setAdapter(viewpageradapter);
 
 		// Capture tab button clicks

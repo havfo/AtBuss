@@ -1,16 +1,16 @@
 package net.fosstveit.atbuss.utils;
 
-import net.fosstveit.atbuss.AtBussFragment;
-import net.fosstveit.atbuss.MostUsedFragment;
+import net.fosstveit.atbuss.fragments.AtBussFragment;
+import net.fosstveit.atbuss.fragments.MostUsedFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-public class ViewPagerAdapter extends FragmentStatePagerAdapter {
+public class AtBussViewPagerAdapter extends FragmentStatePagerAdapter {
 
 	private final int PAGES = 2;
 
-	public ViewPagerAdapter(FragmentManager fm) {
+	public AtBussViewPagerAdapter(FragmentManager fm) {
 		super(fm);
 	}
 
