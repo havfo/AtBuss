@@ -152,7 +152,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 		ArrayList<BusStop> stops = new ArrayList<BusStop>();
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, null, null, null,
-				null, null, null);
+				null, STOPS_KEY_NUMUSED + " DESC", null);
 		BusStop stop = null;
 		if (cursor != null && cursor.moveToFirst()) {
 			do {

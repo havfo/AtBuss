@@ -30,86 +30,75 @@ public class MainActivity extends SherlockFragmentActivity {
 	public final static String BUS_ROUTE_NAME = "net.fosstveit.atbuss.BUSROUTE";
 	public final static String BUS_ROUTE_TIME = "net.fosstveit.atbuss.BUSTIME";
 	public final static String BUS_ROUTE_SCHED = "net.fosstveit.atbuss.BUSSCHED";
-	
-	// Declare Variables
+
 	private ActionBar mActionBar;
 	private ViewPager mPager;
 	private Tab tab;
 
 	public static SQLiteManager sqliteManager = null;
-	private int busStopsVersion = 0;
+
+	public static boolean firstRun = false;
 
 	public static ArrayList<BusStop> busStops;
-	public static ArrayList<BusStop> mostUsedBusStops;
-	
+
 	public static SharedPreferences sharedPrefs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		sqliteManager = new SQLiteManager(this);
+		parseBusStops();
+
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		// Get the view from activity_main.xml
 		setContentView(R.layout.activity_main);
 
-		// Activate Navigation Mode Tabs
 		mActionBar = getSupportActionBar();
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		// Locate ViewPager in activity_main.xml
 		mPager = (ViewPager) findViewById(R.id.pager);
 
-		// Activate Fragment Manager
 		FragmentManager fm = getSupportFragmentManager();
 
-		// Capture ViewPager page swipes
 		ViewPager.SimpleOnPageChangeListener ViewPagerListener = new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
 				super.onPageSelected(position);
-				// Find the ViewPager Position
 				mActionBar.setSelectedNavigationItem(position);
 			}
 		};
 
 		mPager.setOnPageChangeListener(ViewPagerListener);
-		// Locate the adapter class called ViewPagerAdapter.java
 		ViewPagerAdapter viewpageradapter = new ViewPagerAdapter(fm);
-		// Set the View Pager Adapter into ViewPager
 		mPager.setAdapter(viewpageradapter);
 
 		// Capture tab button clicks
 		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
 			@Override
 			public void onTabSelected(Tab tab, FragmentTransaction ft) {
-				// Pass the position on tab click to ViewPager
 				mPager.setCurrentItem(tab.getPosition());
 			}
 
 			@Override
 			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
 			public void onTabReselected(Tab tab, FragmentTransaction ft) {
-				// TODO Auto-generated method stub
 			}
 		};
 
 		// Create first Tab
-		tab = mActionBar.newTab().setText("I nærheten").setTabListener(tabListener);
+		tab = mActionBar.newTab().setText("I nærheten")
+				.setTabListener(tabListener);
 		mActionBar.addTab(tab);
 
 		// Create second Tab
-		tab = mActionBar.newTab().setText("Mest brukte").setTabListener(tabListener);
+		tab = mActionBar.newTab().setText("Mest brukte")
+				.setTabListener(tabListener);
 		mActionBar.addTab(tab);
-
-		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		sqliteManager = new SQLiteManager(this);
-		checkIfFirstRun();
-		parseBusStops();
 	}
 
 	@Override
@@ -117,7 +106,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		getSupportMenuInflater().inflate(R.menu.activity_at_buss, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -134,7 +123,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	public void askOracle() {
 		Intent intent = new Intent(MainActivity.this, AskOracleActivity.class);
 		startActivity(intent);
@@ -145,17 +134,14 @@ public class MainActivity extends SherlockFragmentActivity {
 		startActivity(intent);
 	}
 
-	private void checkIfFirstRun() {
-		busStopsVersion = sqliteManager.getLatestVersion();
-
-		if (busStopsVersion == -1) { // We don't have stops, need to get them
+	private void parseBusStops() {
+		if (sharedPrefs.getBoolean("my_first_time", true)) {
+			firstRun = true;
+			new PopulateBusStops().execute();
+			sharedPrefs.edit().putBoolean("my_first_time", false).commit();
+		} else {
 			new PopulateBusStops().execute();
 		}
-	}
-
-	private void parseBusStops() {
-		busStops = sqliteManager.getAllBusStops();
-		mostUsedBusStops = sqliteManager.getMostUsedBusStops(Integer.parseInt(sharedPrefs.getString("Stops", "10")));
 	}
 
 	private class PopulateBusStops extends AsyncTask<String, Void, String> {
@@ -165,24 +151,33 @@ public class MainActivity extends SherlockFragmentActivity {
 
 		@Override
 		protected void onPreExecute() {
-			dialog.setMessage("Henter data...");
-			dialog.show();
-			dialog.setCancelable(false);
-			dialog.setCanceledOnTouchOutside(false);
+			if (firstRun) {
+				dialog.setMessage("Henter data...");
+				dialog.show();
+				dialog.setCancelable(false);
+				dialog.setCanceledOnTouchOutside(false);
+			}
 		}
 
 		@Override
 		protected String doInBackground(final String... args) {
-			sqliteManager.clearBusStops();
-			Utils.getBusStops();
-			Utils.getVersion();
+			if (firstRun) {
+				sqliteManager.clearBusStops();
+				Utils.getBusStops();
+				Utils.getVersion();
+			}
+
+			busStops = sqliteManager.getAllBusStops();
 			return "Done";
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-			if (dialog.isShowing()) {
-				dialog.dismiss();
+			if (firstRun) {
+				if (dialog.isShowing()) {
+					dialog.dismiss();
+				}
+				firstRun = false;
 			}
 		}
 	}

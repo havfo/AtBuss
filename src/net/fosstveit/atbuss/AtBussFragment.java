@@ -11,12 +11,11 @@ import net.fosstveit.atbuss.managers.CompassManager;
 import net.fosstveit.atbuss.managers.GPSManager;
 import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.BusStopAdapter;
+import net.fosstveit.atbuss.utils.Utils;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +25,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.MenuItem;
 
-public class AtBussFragment extends SherlockFragment implements GPSCallback,CompassCallback {
+public class AtBussFragment extends SherlockFragment implements GPSCallback,
+		CompassCallback {
 	private GPSManager gpsManager = null;
 	private double currentLon = 0;
 	private double currentLat = 0;
@@ -44,21 +43,23 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,Comp
 	private BusStopAdapter busStopAdapter;
 
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
-		
-		RelativeLayout rl = (RelativeLayout) inflater.inflate(R.layout.activity_at_buss, container, false);
-		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+				Boolean.TRUE);
+
+		RelativeLayout rl = (RelativeLayout) inflater.inflate(
+				R.layout.activity_at_buss, container, false);
+
 		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
 		listSelectStop.setOnItemClickListener(busStopSelected);
 
 		busStopAdapter = new BusStopAdapter(getSherlockActivity());
 		listSelectStop.setAdapter(busStopAdapter);
-		
-        return rl;
-    }
-	
+
+		return rl;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -95,7 +96,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,Comp
 
 		currentLocation = location;
 
-		new GetBusStops().execute();
+		Utils.executeAsyncTask(new GetBusStops());
 	}
 
 	@Override
@@ -116,10 +117,10 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,Comp
 			Intent intent = new Intent(getSherlockActivity(),
 					BusStopActivity.class);
 			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
-			
+
 			b.setNumUsed(b.getNumUsed() + 1);
 			MainActivity.sqliteManager.updateBusStop(b);
-			
+
 			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
 			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
 			startActivity(intent);
@@ -181,27 +182,31 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,Comp
 
 	private class GetBusStops extends AsyncTask<String, Void, String> {
 		List<BusStop> tmpList = new ArrayList<BusStop>();
-		
+
 		@Override
 		protected void onPreExecute() {
-			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
+			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+					Boolean.TRUE);
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			for (BusStop b : MainActivity.busStops) {
-				double distance = calcGeoDistance(currentLat, currentLon,
-						b.getLatitude(), b.getLongitude());
+			if (MainActivity.busStops != null) {
+				for (BusStop b : MainActivity.busStops) {
+					double distance = calcGeoDistance(currentLat, currentLon,
+							b.getLatitude(), b.getLongitude());
 
-				b.setDistance((int) distance);
-			}
-			
-			double distanceLimit = Integer.parseInt(MainActivity.sharedPrefs.getString(
-					"Distance", "500"));
-			
-			for (BusStop b : MainActivity.busStops) {
-				if (b.getDistance() < distanceLimit) {
-					tmpList.add(b);
+					b.setDistance((int) distance);
+				}
+
+				double distanceLimit = Integer
+						.parseInt(MainActivity.sharedPrefs.getString(
+								"Distance", "500"));
+
+				for (BusStop b : MainActivity.busStops) {
+					if (b.getDistance() < distanceLimit) {
+						tmpList.add(b);
+					}
 				}
 			}
 			return "Done";
@@ -218,7 +223,8 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,Comp
 
 			busStopAdapter.updateBusStops(tmpList);
 
-			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(Boolean.FALSE);
+			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+					Boolean.FALSE);
 		}
 	}
 

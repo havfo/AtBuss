@@ -12,6 +12,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import android.annotation.TargetApi;
+import android.os.AsyncTask;
+import android.os.Build;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +27,16 @@ import java.util.Date;
  * @author Håvar Aambø Fosstveit
  */
 public class Utils {
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
+			T... params) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+		} else {
+			task.execute(params);
+		}
+	}
+
 	public static void getBusStops() {
 		try {
 			HttpClient httpclient = new DefaultHttpClient();
@@ -42,7 +56,7 @@ public class Utils {
 			}
 
 			String[] values = result.split("<spl>", -1);
-			
+
 			MainActivity.sqliteManager.addBusStops(values);
 
 			// for (int i = 0; i < values.length; i++) {

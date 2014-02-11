@@ -1,5 +1,7 @@
 package net.fosstveit.atbuss;
 
+import java.util.ArrayList;
+
 import com.actionbarsherlock.app.SherlockFragment;
 
 import net.fosstveit.atbuss.objects.BusStop;
@@ -17,6 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class MostUsedFragment extends SherlockFragment {
 	private ListView listSelectStop;
 	private BusStopAdapter busStopAdapter;
+	private ArrayList<BusStop> mostUsed;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,7 +36,9 @@ public class MostUsedFragment extends SherlockFragment {
 		busStopAdapter = new BusStopAdapter(getSherlockActivity());
 		listSelectStop.setAdapter(busStopAdapter);
 		
-		busStopAdapter.updateBusStops(MainActivity.mostUsedBusStops);
+		mostUsed = new ArrayList<BusStop>();
+
+		createAdapterView();
 
 		return rl;
 	}
@@ -44,13 +49,23 @@ public class MostUsedFragment extends SherlockFragment {
 			Intent intent = new Intent(getSherlockActivity(),
 					BusStopActivity.class);
 			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
-			
+
 			b.setNumUsed(b.getNumUsed() + 1);
 			MainActivity.sqliteManager.updateBusStop(b);
-			
+
 			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
 			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
 			startActivity(intent);
 		}
 	};
+
+	private void createAdapterView() {
+		if (MainActivity.busStops != null && MainActivity.busStops.size() > 10) {
+			for (int i = 0; i < 10; i++) {
+				mostUsed.add(MainActivity.busStops.get(i));
+			}
+			
+			busStopAdapter.updateBusStops(mostUsed);
+		}
+	}
 }
