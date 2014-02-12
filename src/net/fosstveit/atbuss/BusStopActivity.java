@@ -1,9 +1,6 @@
 package net.fosstveit.atbuss;
 
 import net.fosstveit.atbuss.R;
-import net.fosstveit.atbuss.R.id;
-import net.fosstveit.atbuss.R.layout;
-import net.fosstveit.atbuss.R.menu;
 import net.fosstveit.atbuss.utils.BusStopViewPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
