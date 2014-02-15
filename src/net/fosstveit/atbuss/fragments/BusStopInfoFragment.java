@@ -1,13 +1,16 @@
 package net.fosstveit.atbuss.fragments;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import net.fosstveit.atbuss.BusStopActivity;
 import net.fosstveit.atbuss.MainActivity;
 import net.fosstveit.atbuss.R;
-import net.fosstveit.atbuss.objects.BusStop;
-import net.fosstveit.atbuss.utils.BusStopAdapter;
+import net.fosstveit.atbuss.objects.BusRoute;
+import net.fosstveit.atbuss.utils.BusRouteAdapter;
+import net.fosstveit.atbuss.utils.Utils;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +23,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class BusStopInfoFragment extends SherlockFragment {
-	private ListView listSelectStop;
-	private BusStopAdapter busStopAdapter;
-	private ArrayList<BusStop> mostUsed;
+	private ListView listSelectRoutes;
+	private BusRouteAdapter busRouteAdapter;
+	private int stopId;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,30 +34,34 @@ public class BusStopInfoFragment extends SherlockFragment {
 				Boolean.TRUE);
 
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
-				R.layout.fragment_at_buss, container, false);
+				R.layout.fragment_bus_route, container, false);
 
-		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
-		listSelectStop.setOnItemClickListener(busStopSelected);
+		listSelectRoutes = (ListView) rl.findViewById(R.id.listSelectStop);
+		listSelectRoutes.setOnItemClickListener(busRouteSelected);
 
-		busStopAdapter = new BusStopAdapter(getSherlockActivity());
-		listSelectStop.setAdapter(busStopAdapter);
-		
-		mostUsed = new ArrayList<BusStop>();
+		busRouteAdapter = new BusRouteAdapter(getSherlockActivity());
+		listSelectRoutes.setAdapter(busRouteAdapter);
 
-		createAdapterView();
+		Bundle extras = getSherlockActivity().getIntent().getExtras();
+		if (extras != null) {
+			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
+		}
 
 		return rl;
 	}
 
-	private OnItemClickListener busStopSelected = new OnItemClickListener() {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		getBusRoutes();
+	}
+
+	private OnItemClickListener busRouteSelected = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> av, View v, int i, long l) {
 			Intent intent = new Intent(getSherlockActivity(),
 					BusStopActivity.class);
-			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
-
-			b.setNumUsed(b.getNumUsed() + 1);
-			MainActivity.sqliteManager.updateBusStop(b);
+			BusRoute b = (BusRoute) listSelectRoutes.getItemAtPosition(i);
 
 			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
 			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
@@ -62,13 +69,36 @@ public class BusStopInfoFragment extends SherlockFragment {
 		}
 	};
 
-	private void createAdapterView() {
-		if (MainActivity.busStops != null && MainActivity.busStops.size() > 10) {
-			for (int i = 0; i < 10; i++) {
-				mostUsed.add(MainActivity.busStops.get(i));
+	private void getBusRoutes() {
+		new GetBusRoutes().execute();
+	}
+
+	private class GetBusRoutes extends AsyncTask<String, Void, String> {
+
+		private BusRoute[] routes;
+
+		@Override
+		protected void onPreExecute() {
+			getSherlockActivity().setProgressBarIndeterminateVisibility(
+					Boolean.TRUE);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			routes = Utils.getRoutes(stopId);
+			return "Done";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (routes != null) {
+				busRouteAdapter.updateBusRoutes(Arrays.asList(routes));
+			} else {
+				busRouteAdapter.updateBusRoutes(new ArrayList<BusRoute>());
 			}
-			
-			busStopAdapter.updateBusStops(mostUsed);
+
+			getSherlockActivity().setProgressBarIndeterminateVisibility(
+					Boolean.FALSE);
 		}
 	}
 }

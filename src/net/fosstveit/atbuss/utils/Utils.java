@@ -2,6 +2,7 @@ package net.fosstveit.atbuss.utils;
 
 import net.fosstveit.atbuss.MainActivity;
 import net.fosstveit.atbuss.objects.BusEvent;
+import net.fosstveit.atbuss.objects.BusRoute;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -100,6 +101,49 @@ public class Utils {
 		}
 	}
 
+	public static BusRoute[] getRoutes(int busStopId) {
+		BusRoute[] ret = null;
+
+		try {
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(
+					"http://fosstveit.no/buss/getroutes.php?busstopid=" + busStopId);
+
+			HttpResponse response;
+			response = httpclient.execute(httpget);
+			HttpEntity entity = response.getEntity();
+
+			String result = "";
+
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				result = convertStreamToString(instream);
+				instream.close();
+			}
+
+			result = result.replace("\n", "").replace("\r", "");
+
+			JSONParser parser = new JSONParser();
+
+			JSONArray arr = (JSONArray) (parser.parse(result));
+			ret = new BusRoute[arr.size()];
+
+			for (int i = 0; i < arr.size(); i++) {
+				JSONObject tmp = (JSONObject) arr.get(i);
+
+				ret[i] = new BusRoute(Integer.parseInt((String) tmp.get("perc")),
+						(String) tmp.get("route"),
+						Integer.parseInt((String) tmp.get("tostop")),
+						(String) tmp.get("tostopname"));
+			}
+
+			return ret;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 	public static BusEvent[] getBusTime(int busStopId, int numStops) {
 		BusEvent[] ret = null;
 
