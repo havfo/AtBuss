@@ -1,7 +1,6 @@
 package net.fosstveit.atbuss.fragments;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import net.fosstveit.atbuss.BusStopActivity;
 import net.fosstveit.atbuss.MainActivity;
@@ -36,16 +35,11 @@ public class BusStopInfoFragment extends SherlockFragment {
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
 				R.layout.fragment_bus_route, container, false);
 
-		listSelectRoutes = (ListView) rl.findViewById(R.id.listSelectStop);
+		listSelectRoutes = (ListView) rl.findViewById(R.id.listBusRoutes);
 		listSelectRoutes.setOnItemClickListener(busRouteSelected);
 
 		busRouteAdapter = new BusRouteAdapter(getSherlockActivity());
 		listSelectRoutes.setAdapter(busRouteAdapter);
-
-		Bundle extras = getSherlockActivity().getIntent().getExtras();
-		if (extras != null) {
-			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
-		}
 
 		return rl;
 	}
@@ -53,6 +47,12 @@ public class BusStopInfoFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Bundle extras = getSherlockActivity().getIntent().getExtras();
+		if (extras != null) {
+			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
+		}
+		
 		getBusRoutes();
 	}
 
@@ -75,7 +75,7 @@ public class BusStopInfoFragment extends SherlockFragment {
 
 	private class GetBusRoutes extends AsyncTask<String, Void, String> {
 
-		private BusRoute[] routes;
+		private ArrayList<BusRoute> routes;
 
 		@Override
 		protected void onPreExecute() {
@@ -92,7 +92,7 @@ public class BusStopInfoFragment extends SherlockFragment {
 		@Override
 		protected void onPostExecute(String result) {
 			if (routes != null) {
-				busRouteAdapter.updateBusRoutes(Arrays.asList(routes));
+				busRouteAdapter.updateBusRoutes(routes);
 			} else {
 				busRouteAdapter.updateBusRoutes(new ArrayList<BusRoute>());
 			}

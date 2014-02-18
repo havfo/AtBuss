@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
+import net.fosstveit.atbuss.AtBussApplication;
 import net.fosstveit.atbuss.BusEventActivity;
 import net.fosstveit.atbuss.MainActivity;
 import net.fosstveit.atbuss.R;
@@ -40,13 +41,6 @@ public class BusStopFragment extends SherlockFragment {
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
 				R.layout.fragment_bus_stop, container, false);
 
-		Bundle extras = getSherlockActivity().getIntent().getExtras();
-		if (extras != null) {
-			stopName = (String) extras.get(MainActivity.BUS_STOP_NAME);
-			getSherlockActivity().setTitle(stopName);
-			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
-		}
-
 		listSelectEvent = (ListView) rl.findViewById(R.id.listBusEvents);
 		listSelectEvent.setOnItemClickListener(busEventSelected);
 
@@ -60,6 +54,14 @@ public class BusStopFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Bundle extras = getSherlockActivity().getIntent().getExtras();
+		if (extras != null) {
+			stopName = (String) extras.get(MainActivity.BUS_STOP_NAME);
+			getSherlockActivity().setTitle(stopName);
+			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
+		}
+		
 		getBusEvents();
 	}
 	
@@ -119,7 +121,7 @@ public class BusStopFragment extends SherlockFragment {
 
 		@Override
 		protected String doInBackground(String... params) {
-			int numStops = Integer.parseInt(MainActivity.sharedPrefs.getString(
+			int numStops = Integer.parseInt(((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getSharedPrefs().getString(
 					"Sanntidsdata", "15"));
 			events = Utils.getBusTime(stopId, numStops);
 			return "Done";

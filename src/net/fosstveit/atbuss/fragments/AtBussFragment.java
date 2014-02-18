@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.fosstveit.atbuss.AtBussApplication;
 import net.fosstveit.atbuss.BusStopActivity;
 import net.fosstveit.atbuss.MainActivity;
 import net.fosstveit.atbuss.R;
 import net.fosstveit.atbuss.interfaces.CompassCallback;
 import net.fosstveit.atbuss.interfaces.GPSCallback;
+import net.fosstveit.atbuss.interfaces.OnLoadDataListener;
 import net.fosstveit.atbuss.managers.CompassManager;
 import net.fosstveit.atbuss.managers.GPSManager;
 import net.fosstveit.atbuss.objects.BusStop;
@@ -30,7 +32,7 @@ import android.widget.RelativeLayout;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class AtBussFragment extends SherlockFragment implements GPSCallback,
-		CompassCallback {
+		CompassCallback, OnLoadDataListener {
 	private GPSManager gpsManager = null;
 	private double currentLon = 0;
 	private double currentLat = 0;
@@ -44,6 +46,8 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 	private ListView listSelectStop;
 	private BusStopAdapter busStopAdapter;
+	
+	private boolean hasData;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,7 +60,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
 		listSelectStop.setOnItemClickListener(busStopSelected);
-
+		
 		busStopAdapter = new BusStopAdapter(getSherlockActivity());
 		listSelectStop.setAdapter(busStopAdapter);
 
@@ -66,6 +70,12 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if (!((AtBussApplication) (getSherlockActivity()).getApplicationContext()).hasData()) {
+			((AtBussApplication) (getSherlockActivity()).getApplicationContext()).addDataListener(this);
+		} else {
+			hasData = true;
+		}
 
 		startGPS();
 		startCompass();
@@ -99,7 +109,9 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 		currentLocation = location;
 
-		Utils.executeAsyncTask(new GetBusStops());
+		if (hasData) {
+			Utils.executeAsyncTask(new GetBusStops());
+		}
 	}
 
 	@Override
@@ -108,7 +120,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 		long time = System.currentTimeMillis();
 
-		if (time - lastCompassUpdate > 500) {
+		if (time - lastCompassUpdate > 500 && hasData) {
 			lastCompassUpdate = time;
 			new RotateBusArrows().execute();
 		}
@@ -122,7 +134,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
 
 			b.setNumUsed(b.getNumUsed() + 1);
-			MainActivity.sqliteManager.updateBusStop(b);
+			((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getDataManager().updateBusStop(b);
 
 			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
 			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
@@ -183,6 +195,11 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 		}
 	}
 
+	@Override
+	public void onLoadData() {
+		hasData = true;
+	}
+
 	private class GetBusStops extends AsyncTask<String, Void, String> {
 		List<BusStop> tmpList = new ArrayList<BusStop>();
 
@@ -194,8 +211,8 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 		@Override
 		protected String doInBackground(String... params) {
-			if (MainActivity.busStops != null) {
-				for (BusStop b : MainActivity.busStops) {
+			if (((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops() != null) {
+				for (BusStop b : ((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops()) {
 					double distance = calcGeoDistance(currentLat, currentLon,
 							b.getLatitude(), b.getLongitude());
 
@@ -203,10 +220,10 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 				}
 
 				double distanceLimit = Integer
-						.parseInt(MainActivity.sharedPrefs.getString(
+						.parseInt(((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getSharedPrefs().getString(
 								"Distance", "500"));
 
-				for (BusStop b : MainActivity.busStops) {
+				for (BusStop b : ((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops()) {
 					if (b.getDistance() < distanceLimit) {
 						tmpList.add(b);
 					}

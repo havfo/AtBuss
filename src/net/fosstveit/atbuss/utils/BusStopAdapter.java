@@ -11,7 +11,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.fosstveit.atbuss.MainActivity;
+import net.fosstveit.atbuss.AtBussApplication;
 import net.fosstveit.atbuss.R;
 import net.fosstveit.atbuss.objects.BusStop;
 
@@ -34,7 +34,6 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 	}
 
 	public void updateBusStops(List<BusStop> busStops) {
-		ThreadPreconditions.checkOnMainThread();
 		this.busStops = busStops;
 		notifyDataSetChanged();
 	}
@@ -108,7 +107,7 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 				ArrayList<BusStop> filt = new ArrayList<BusStop>();
 				ArrayList<BusStop> lItems = new ArrayList<BusStop>();
 				synchronized (this) {
-					lItems.addAll(MainActivity.busStops);
+					lItems.addAll(((AtBussApplication)context.getApplicationContext()).getBusStops());
 				}
 				for (BusStop b : lItems) {
 					if (b.getName().toLowerCase(Locale.ENGLISH)
@@ -119,8 +118,8 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 				result.values = filt;
 			} else {
 				synchronized (this) {
-					result.values = MainActivity.busStops;
-					result.count = MainActivity.busStops.size();
+					result.values = ((AtBussApplication)context.getApplicationContext()).getBusStops();
+					result.count = ((AtBussApplication)context.getApplicationContext()).getBusStops().size();
 				}
 			}
 			return result;

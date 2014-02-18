@@ -15,8 +15,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import net.fosstveit.atbuss.R;
-import net.fosstveit.atbuss.R.id;
-import net.fosstveit.atbuss.R.layout;
 import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.BusStopAdapter;
 
@@ -66,7 +64,7 @@ public class SearchActivity extends SherlockActivity {
 			BusStop b = (BusStop) searchList.getItemAtPosition(i);
 			
 			b.setNumUsed(b.getNumUsed() + 1);
-			MainActivity.sqliteManager.updateBusStop(b);
+			((AtBussApplication) getApplicationContext()).getDataManager().updateBusStop(b);
 			
 			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
 			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());

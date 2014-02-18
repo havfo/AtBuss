@@ -24,7 +24,6 @@ public class BusRouteAdapter extends BaseAdapter {
 	}
 
 	public void updateBusRoutes(List<BusRoute> busRoute) {
-		ThreadPreconditions.checkOnMainThread();
 		this.busRoutes = busRoute;
 		notifyDataSetChanged();
 	}

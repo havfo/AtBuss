@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,7 +39,9 @@ public class Utils {
 		}
 	}
 
-	public static void getBusStops() {
+	public static String[] getBusStops() {
+		String[] ret = null;
+		
 		try {
 			HttpClient httpclient = new DefaultHttpClient();
 			HttpGet httpget = new HttpGet(
@@ -56,26 +59,18 @@ public class Utils {
 				instream.close();
 			}
 
-			String[] values = result.split("<spl>", -1);
+			ret = result.split("<spl>", -1);
 
-			MainActivity.sqliteManager.addBusStops(values);
-
-			// for (int i = 0; i < values.length; i++) {
-			// String[] tmp = values[i].split("<ln>", -1);
-			//
-			// AtBussActivity.sqliteManager.addBusStop(tmp[0], tmp[1], tmp[2],
-			// tmp[3]);
-
-			// BusStop stop = new BusStop(Integer.parseInt(tmp[0]), tmp[1],
-			// Double.parseDouble(tmp[2]), Double.parseDouble(tmp[3]));
-			// stops.add(stop);
-			// }
+			return ret;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		return ret;
 	}
 
-	public static void getVersion() {
+	public static int getVersion() {
+		int ret = -1;
 		try {
 			HttpClient httpclient = new DefaultHttpClient();
 			HttpGet httpget = new HttpGet(
@@ -93,16 +88,17 @@ public class Utils {
 				instream.close();
 			}
 
-			result = result.replace("\n", "").replace("\r", "");
+			ret = Integer.parseInt(result.replace("\n", "").replace("\r", ""));
 
-			MainActivity.sqliteManager.addVersion(result);
+			return ret;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return ret;
 	}
 
-	public static BusRoute[] getRoutes(int busStopId) {
-		BusRoute[] ret = null;
+	public static ArrayList<BusRoute> getRoutes(int busStopId) {
+		ArrayList<BusRoute> ret = null;
 
 		try {
 			HttpClient httpclient = new DefaultHttpClient();
@@ -126,15 +122,15 @@ public class Utils {
 			JSONParser parser = new JSONParser();
 
 			JSONArray arr = (JSONArray) (parser.parse(result));
-			ret = new BusRoute[arr.size()];
+			ret = new ArrayList<BusRoute>();
 
 			for (int i = 0; i < arr.size(); i++) {
 				JSONObject tmp = (JSONObject) arr.get(i);
 
-				ret[i] = new BusRoute(Integer.parseInt((String) tmp.get("perc")),
+				ret.add(new BusRoute(Integer.parseInt((String) tmp.get("perc")),
 						(String) tmp.get("route"),
 						Integer.parseInt((String) tmp.get("tostop")),
-						(String) tmp.get("tostopname"));
+						(String) tmp.get("tostopname")));
 			}
 
 			return ret;
