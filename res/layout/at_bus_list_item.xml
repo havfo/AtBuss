@@ -19,14 +19,14 @@
         android:layout_below="@id/bus_stop_name"
         android:textSize="12sp" />
 
-    <ImageView
+    <!-- <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/arrowImage"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/arrow"/>
+        android:src="@drawable/arrow"/> -->
 
 </RelativeLayout>
 
