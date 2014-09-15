@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class AtBussDataManager extends SQLiteOpenHelper {
-	
+
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "AtBuss";
 
@@ -19,14 +19,19 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 	private static final String STOPS_KEY_NAME = "name";
 	private static final String STOPS_KEY_LATITUDE = "latitude";
 	private static final String STOPS_KEY_LONGITUDE = "longitude";
+	private static final String STOPS_KEY_LATITUDE_INDEX = "latitudeindex";
+	private static final String STOPS_KEY_LONGITUDE_INDEX = "longitudeindex";
 	private static final String STOPS_KEY_NUMUSED = "numused";
 	private static final String[] STOPS_COLUMNS = { STOPS_KEY_ID,
 			STOPS_KEY_NAME, STOPS_KEY_LATITUDE, STOPS_KEY_LONGITUDE,
+			STOPS_KEY_LATITUDE_INDEX, STOPS_KEY_LONGITUDE_INDEX,
 			STOPS_KEY_NUMUSED };
 	private static final String CREATE_STOPS_TABLE = "CREATE TABLE "
 			+ TABLE_STOPS + " (" + STOPS_KEY_ID + " INTEGER PRIMARY KEY, "
 			+ STOPS_KEY_NAME + " TEXT, " + STOPS_KEY_LATITUDE + " REAL, "
-			+ STOPS_KEY_LONGITUDE + " REAL, " + STOPS_KEY_NUMUSED + " INTEGER)";
+			+ STOPS_KEY_LONGITUDE + " REAL, " + STOPS_KEY_LATITUDE_INDEX
+			+ " INTEGER, " + STOPS_KEY_LONGITUDE_INDEX + " INTEGER, "
+			+ STOPS_KEY_NUMUSED + " INTEGER)";
 
 	private static final String TABLE_VERSION = "version";
 	private static final String VERSION_KEY_ID = "id";
@@ -62,18 +67,8 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 		values.put(STOPS_KEY_NAME, stop.getName());
 		values.put(STOPS_KEY_LATITUDE, stop.getLatitude());
 		values.put(STOPS_KEY_LONGITUDE, stop.getLongitude());
-		values.put(STOPS_KEY_NUMUSED, 0);
-		db.insert(TABLE_STOPS, null, values);
-		db.close();
-	}
-
-	public void addBusStop(String id, String name, String lat, String lon) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		ContentValues values = new ContentValues();
-		values.put(STOPS_KEY_ID, id);
-		values.put(STOPS_KEY_NAME, name);
-		values.put(STOPS_KEY_LATITUDE, lat);
-		values.put(STOPS_KEY_LONGITUDE, lon);
+		values.put(STOPS_KEY_LATITUDE_INDEX, stop.getLatitudeindex());
+		values.put(STOPS_KEY_LONGITUDE_INDEX, stop.getLongitudeindex());
 		values.put(STOPS_KEY_NUMUSED, 0);
 		db.insert(TABLE_STOPS, null, values);
 		db.close();
@@ -89,6 +84,8 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 			values.put(STOPS_KEY_NAME, tmp[1]);
 			values.put(STOPS_KEY_LATITUDE, tmp[2]);
 			values.put(STOPS_KEY_LONGITUDE, tmp[3]);
+			values.put(STOPS_KEY_LATITUDE_INDEX, tmp[4]);
+			values.put(STOPS_KEY_LONGITUDE_INDEX, tmp[5]);
 			values.put(STOPS_KEY_NUMUSED, 0);
 			db.insert(TABLE_STOPS, null, values);
 			values.clear();
@@ -149,6 +146,49 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 		}
 	}
 
+	public ArrayList<BusStop> getBusStopsInRange(int latindex, int lonindex,
+			double dist) {
+		ArrayList<BusStop> stops = new ArrayList<BusStop>();
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		int distanceLoop = (int) (dist / 500);
+		
+		String where = "";
+		
+		int i = 0;
+
+		for (int lati = -distanceLoop; lati < distanceLoop; lati++) {
+			for (int loni = -distanceLoop; loni < distanceLoop; loni++) {
+				
+				if (i > 0) {
+					where += " or ";
+				} else {
+					i++;
+				}
+				
+				where += "latitudeindex = " + (latindex + lati) + " and longitudeindex = "
+						+ (lonindex + loni);
+			}
+		}
+		
+		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, where, null, null,
+				null, STOPS_KEY_NUMUSED + " DESC", null);
+		BusStop stop = null;
+		if (cursor != null && cursor.moveToFirst()) {
+			do {
+				stop = new BusStop(Integer.parseInt(cursor.getString(0)),
+						cursor.getString(1), Double.parseDouble(cursor
+								.getString(2)), Double.parseDouble(cursor
+								.getString(3)), Integer.parseInt(cursor
+								.getString(4)));
+
+				stops.add(stop);
+			} while (cursor.moveToNext());
+		}
+
+		return stops;
+	}
+
 	public ArrayList<BusStop> getAllBusStops() {
 		ArrayList<BusStop> stops = new ArrayList<BusStop>();
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -169,7 +209,7 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 
 		return stops;
 	}
-	
+
 	public ArrayList<BusStop> getMostUsedBusStops(int count) {
 		ArrayList<BusStop> stops = new ArrayList<BusStop>();
 		SQLiteDatabase db = this.getReadableDatabase();

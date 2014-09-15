@@ -27,13 +27,14 @@ public class MostUsedFragment extends SherlockFragment implements
 		OnLoadDataListener {
 	private ListView listSelectStop;
 	private BusStopAdapter busStopAdapter;
+	
+	private AtBussApplication app = null;
+	
+	private ArrayList<BusStop> stops;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
-				Boolean.TRUE);
-
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
 				R.layout.fragment_at_buss, container, false);
 
@@ -49,9 +50,11 @@ public class MostUsedFragment extends SherlockFragment implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		app = (AtBussApplication) getSherlockActivity().getApplication();
 
-		if (!((AtBussApplication) (getSherlockActivity()).getApplicationContext()).hasData()) {
-			((AtBussApplication) (getSherlockActivity()).getApplicationContext()).addDataListener(this);
+		if (!app.hasData()) {
+			app.addDataListener(this);
 		} else {
 			createAdapterView();
 		}
@@ -65,7 +68,7 @@ public class MostUsedFragment extends SherlockFragment implements
 			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
 
 			b.setNumUsed(b.getNumUsed() + 1);
-			((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getDataManager().updateBusStop(b);
+			app.getDataManager().updateBusStop(b);
 
 			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
 			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
@@ -83,32 +86,20 @@ public class MostUsedFragment extends SherlockFragment implements
 	}
 	
 	private class GetBusStops extends AsyncTask<String, Void, String> {
-		List<BusStop> tmpList = new ArrayList<BusStop>();
-
 		@Override
 		protected void onPreExecute() {
-			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
-					Boolean.TRUE);
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			if (((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops() != null && ((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops().size() > 10) {
-				ArrayList<BusStop> mostUsed = new ArrayList<BusStop>();
-				
-				for (int i = 0; i < 10; i++) {
-					mostUsed.add(((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops().get(i));
-				}
-			}
+			stops = app.getDataManager().getMostUsedBusStops(10);
+			
 			return "Done";
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-			busStopAdapter.updateBusStops(tmpList);
-
-			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
-					Boolean.FALSE);
+			busStopAdapter.updateBusStops(stops);
 		}
 	}
 }

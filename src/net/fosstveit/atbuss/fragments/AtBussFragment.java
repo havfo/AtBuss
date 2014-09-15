@@ -9,10 +9,7 @@ import net.fosstveit.atbuss.AtBussApplication;
 import net.fosstveit.atbuss.BusStopActivity;
 import net.fosstveit.atbuss.MainActivity;
 import net.fosstveit.atbuss.R;
-import net.fosstveit.atbuss.interfaces.CompassCallback;
 import net.fosstveit.atbuss.interfaces.GPSCallback;
-import net.fosstveit.atbuss.interfaces.OnLoadDataListener;
-import net.fosstveit.atbuss.managers.CompassManager;
 import net.fosstveit.atbuss.managers.GPSManager;
 import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.BusStopAdapter;
@@ -31,36 +28,37 @@ import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class AtBussFragment extends SherlockFragment implements GPSCallback,
-		CompassCallback, OnLoadDataListener {
+public class AtBussFragment extends SherlockFragment implements GPSCallback /*
+																			 * ,
+																			 * CompassCallback
+																			 */{
 	private GPSManager gpsManager = null;
 	private double currentLon = 0;
 	private double currentLat = 0;
 
-	private long lastCompassUpdate = System.currentTimeMillis();
+	// private long lastCompassUpdate = System.currentTimeMillis();
 
 	private Location currentLocation;
 
-	private CompassManager compassManager = null;
-	private int currentDirection = 0;
+	// private CompassManager compassManager = null;
+	// private int currentDirection = 0;
+
+	private ArrayList<BusStop> stops;
 
 	private ListView listSelectStop;
 	private BusStopAdapter busStopAdapter;
-	
-	private boolean hasData;
+
+	private AtBussApplication app = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
-				Boolean.TRUE);
-
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
 				R.layout.fragment_at_buss, container, false);
 
 		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
 		listSelectStop.setOnItemClickListener(busStopSelected);
-		
+
 		busStopAdapter = new BusStopAdapter(getSherlockActivity());
 		listSelectStop.setAdapter(busStopAdapter);
 
@@ -71,35 +69,34 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!((AtBussApplication) (getSherlockActivity()).getApplicationContext()).hasData()) {
-			((AtBussApplication) (getSherlockActivity()).getApplicationContext()).addDataListener(this);
-		} else {
-			hasData = true;
-		}
+		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+				Boolean.TRUE);
+
+		app = (AtBussApplication) getSherlockActivity().getApplication();
 
 		startGPS();
-		startCompass();
+		// startCompass();
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 		startGPS();
-		startCompass();
+		// startCompass();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
 		stopGPS();
-		stopCompass();
+		// stopCompass();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		stopGPS();
-		stopCompass();
+		// stopCompass();
 	}
 
 	@Override
@@ -109,22 +106,22 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 		currentLocation = location;
 
-		if (hasData) {
+		if (app.hasData()) {
 			Utils.executeAsyncTask(new GetBusStops());
 		}
 	}
 
-	@Override
-	public void onCompassUpdate(int direction) {
-		currentDirection = direction;
-
-		long time = System.currentTimeMillis();
-
-		if (time - lastCompassUpdate > 500 && hasData) {
-			lastCompassUpdate = time;
-			new RotateBusArrows().execute();
-		}
-	}
+	// @Override
+	// public void onCompassUpdate(int direction) {
+	// currentDirection = direction;
+	//
+	// long time = System.currentTimeMillis();
+	//
+	// if (time - lastCompassUpdate > 500 && app.hasData()) {
+	// lastCompassUpdate = time;
+	// new RotateBusArrows().execute();
+	// }
+	// }
 
 	private OnItemClickListener busStopSelected = new OnItemClickListener() {
 		@Override
@@ -134,7 +131,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
 
 			b.setNumUsed(b.getNumUsed() + 1);
-			((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getDataManager().updateBusStop(b);
+			app.getDataManager().updateBusStop(b);
 
 			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
 			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
@@ -176,33 +173,44 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 			gpsManager = null;
 		}
 	}
-
-	private void startCompass() {
-		if (compassManager == null) {
-			compassManager = new CompassManager();
-
-			compassManager.startListening(getSherlockActivity());
-			compassManager.setCompassCallback(this);
-		}
+	
+	private int getLatitudeIndex(double latitude) {
+		double lats = 0.0045;
+		double latst = 62.50;
+		
+		int latind = (int) ((latitude - latst) / lats);
+		
+		return latind;
+	}
+	
+	private int getLongitudeIndex(double longitude) {
+		double lons = 0.01;
+		double lonst = 8.50;
+		
+		int lonind = (int) ((longitude - lonst) / lons);
+		
+		return lonind;
 	}
 
-	private void stopCompass() {
-		if (compassManager != null) {
-			compassManager.stopListening();
-			compassManager.setCompassCallback(null);
-
-			compassManager = null;
-		}
-	}
-
-	@Override
-	public void onLoadData() {
-		hasData = true;
-	}
+	// private void startCompass() {
+	// if (compassManager == null) {
+	// compassManager = new CompassManager();
+	//
+	// compassManager.startListening(getSherlockActivity());
+	// compassManager.setCompassCallback(this);
+	// }
+	// }
+	//
+	// private void stopCompass() {
+	// if (compassManager != null) {
+	// compassManager.stopListening();
+	// compassManager.setCompassCallback(null);
+	//
+	// compassManager = null;
+	// }
+	// }
 
 	private class GetBusStops extends AsyncTask<String, Void, String> {
-		List<BusStop> tmpList = new ArrayList<BusStop>();
-
 		@Override
 		protected void onPreExecute() {
 			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
@@ -211,22 +219,18 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 		@Override
 		protected String doInBackground(String... params) {
-			if (((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops() != null) {
-				for (BusStop b : ((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops()) {
+			if (app.hasData()) {
+				double distanceLimit = Integer.parseInt(app.getSharedPrefs()
+						.getString("Distance", "500"));
+
+				stops = app.getDataManager().getBusStopsInRange(getLatitudeIndex(currentLat),
+						getLongitudeIndex(currentLon), distanceLimit);
+
+				for (BusStop b : stops) {
 					double distance = calcGeoDistance(currentLat, currentLon,
 							b.getLatitude(), b.getLongitude());
 
 					b.setDistance((int) distance);
-				}
-
-				double distanceLimit = Integer
-						.parseInt(((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getSharedPrefs().getString(
-								"Distance", "500"));
-
-				for (BusStop b : ((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getBusStops()) {
-					if (b.getDistance() < distanceLimit) {
-						tmpList.add(b);
-					}
 				}
 			}
 			return "Done";
@@ -234,57 +238,56 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback,
 
 		@Override
 		protected void onPostExecute(String result) {
-			Collections.sort(tmpList, new Comparator<BusStop>() {
+			Collections.sort(stops, new Comparator<BusStop>() {
 				@Override
 				public int compare(BusStop lhs, BusStop rhs) {
 					return (int) lhs.getDistance() - (int) rhs.getDistance();
 				}
 			});
 
-			busStopAdapter.updateBusStops(tmpList);
+			busStopAdapter.updateBusStops(stops);
 
 			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
 					Boolean.FALSE);
 		}
 	}
 
-	private class RotateBusArrows extends AsyncTask<String, Void, String> {
-		@Override
-		protected void onPreExecute() {
-
-		}
-
-		@Override
-		protected String doInBackground(String... strings) {
-
-			for (int i = 0; i < busStopAdapter.getCount(); i++) {
-				Location targetLocation = new Location("");
-				targetLocation.setLatitude(busStopAdapter.getItem(i)
-						.getLatitude());
-				targetLocation.setLongitude(busStopAdapter.getItem(i)
-						.getLongitude());
-
-				float bearingTo = currentLocation.bearingTo(targetLocation);
-
-				if (bearingTo < 0) {
-					bearingTo = bearingTo + 360;
-				}
-
-				int direction = (int) (bearingTo - currentDirection);
-
-				if (direction < 0) {
-					direction = direction + 360;
-				}
-
-				busStopAdapter.getItem(i).setDirection(direction);
-			}
-
-			return "Done";
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			busStopAdapter.notifyDataSetChanged();
-		}
-	}
+	// private class RotateBusArrows extends AsyncTask<String, Void, String> {
+	// @Override
+	// protected void onPreExecute() {
+	// }
+	//
+	// @Override
+	// protected String doInBackground(String... strings) {
+	//
+	// for (int i = 0; i < busStopAdapter.getCount(); i++) {
+	// Location targetLocation = new Location("");
+	// targetLocation.setLatitude(busStopAdapter.getItem(i)
+	// .getLatitude());
+	// targetLocation.setLongitude(busStopAdapter.getItem(i)
+	// .getLongitude());
+	//
+	// float bearingTo = currentLocation.bearingTo(targetLocation);
+	//
+	// if (bearingTo < 0) {
+	// bearingTo = bearingTo + 360;
+	// }
+	//
+	// int direction = (int) (bearingTo - currentDirection);
+	//
+	// if (direction < 0) {
+	// direction = direction + 360;
+	// }
+	//
+	// busStopAdapter.getItem(i).setDirection(direction);
+	// }
+	//
+	// return "Done";
+	// }
+	//
+	// @Override
+	// protected void onPostExecute(String result) {
+	// busStopAdapter.notifyDataSetChanged();
+	// }
+	// }
 }

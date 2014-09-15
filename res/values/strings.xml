@@ -4,6 +4,7 @@
     <string name="app_name">AtBuss</string>
     <string name="menu_search">Søk</string>
     <string name="menu_settings">Innstillinger</string>
+    <string name="menu_update">Sjekk oppdateringer</string>
     <string name="menu_oracle">Spør orakelet</string>
     <string name="title_activity_at_buss">AtBuss</string>
     <string name="busStopLabel">Busstopp:</string>
@@ -22,4 +23,7 @@
     <string name="title_activity_settings">Innstillinger</string>
     <string name="title_activity_ask_oracle">Spør Orakelet</string>
     <string name="title_activity_main">AtBuss</string>
+    <string name="title_activity_update">UpdateActivity</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

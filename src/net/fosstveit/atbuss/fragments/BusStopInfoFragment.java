@@ -59,13 +59,13 @@ public class BusStopInfoFragment extends SherlockFragment {
 	private OnItemClickListener busRouteSelected = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> av, View v, int i, long l) {
-			Intent intent = new Intent(getSherlockActivity(),
-					BusStopActivity.class);
-			BusRoute b = (BusRoute) listSelectRoutes.getItemAtPosition(i);
-
-			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
-			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
-			startActivity(intent);
+//			Intent intent = new Intent(getSherlockActivity(),
+//					BusStopActivity.class);
+//			BusRoute b = (BusRoute) listSelectRoutes.getItemAtPosition(i);
+//
+//			intent.putExtra(MainActivity.BUS_STOP_ID, b.getId());
+//			intent.putExtra(MainActivity.BUS_STOP_NAME, b.getName());
+//			startActivity(intent);
 		}
 	};
 

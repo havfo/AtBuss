@@ -1,14 +1,12 @@
 package net.fosstveit.atbuss.utils;
 
 import android.content.Context;
-import android.graphics.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import net.fosstveit.atbuss.AtBussApplication;
@@ -56,22 +54,22 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-		ImageView arrowView;
+//		ImageView arrowView;
 		TextView titleView;
 		TextView subTitleView;
 
 		if (convertView == null) {
 			convertView = LayoutInflater.from(context).inflate(
 					R.layout.at_bus_list_item, parent, false);
-			arrowView = (ImageView) convertView.findViewById(R.id.arrowImage);
+//			arrowView = (ImageView) convertView.findViewById(R.id.arrowImage);
 			titleView = (TextView) convertView.findViewById(R.id.bus_stop_name);
 			subTitleView = (TextView) convertView
 					.findViewById(R.id.bus_stop_distance);
-			convertView.setTag(new ViewHolder(arrowView, titleView,
+			convertView.setTag(new ViewHolder(/* arrowView, */ titleView,
 					subTitleView));
 		} else {
 			ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-			arrowView = viewHolder.arrowView;
+//			arrowView = viewHolder.arrowView;
 			titleView = viewHolder.titleView;
 			subTitleView = viewHolder.subTitleView;
 		}
@@ -80,12 +78,12 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 		titleView.setText(busStop.getName());
 		subTitleView.setText(busStop.getDistance() + " meter unna");
 
-		Matrix matrix = new Matrix();
-		arrowView.setScaleType(ImageView.ScaleType.MATRIX);
-		matrix.postRotate((float) busStop.getDirection(), arrowView
-				.getDrawable().getBounds().width() / 2, arrowView.getDrawable()
-				.getBounds().height() / 2);
-		arrowView.setImageMatrix(matrix);
+//		Matrix matrix = new Matrix();
+//		arrowView.setScaleType(ImageView.ScaleType.MATRIX);
+//		matrix.postRotate((float) busStop.getDirection(), arrowView
+//				.getDrawable().getBounds().width() / 2, arrowView.getDrawable()
+//				.getBounds().height() / 2);
+//		arrowView.setImageMatrix(matrix);
 
 		return convertView;
 	}
@@ -107,7 +105,7 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 				ArrayList<BusStop> filt = new ArrayList<BusStop>();
 				ArrayList<BusStop> lItems = new ArrayList<BusStop>();
 				synchronized (this) {
-					lItems.addAll(((AtBussApplication)context.getApplicationContext()).getBusStops());
+					lItems.addAll(((AtBussApplication)context.getApplicationContext()).getDataManager().getAllBusStops());
 				}
 				for (BusStop b : lItems) {
 					if (b.getName().toLowerCase(Locale.ENGLISH)
@@ -118,8 +116,8 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 				result.values = filt;
 			} else {
 				synchronized (this) {
-					result.values = ((AtBussApplication)context.getApplicationContext()).getBusStops();
-					result.count = ((AtBussApplication)context.getApplicationContext()).getBusStops().size();
+					result.values = ((AtBussApplication)context.getApplicationContext()).getDataManager().getAllBusStops();
+					result.count = ((AtBussApplication)context.getApplicationContext()).getDataManager().getAllBusStops().size();
 				}
 			}
 			return result;
@@ -143,13 +141,13 @@ public class BusStopAdapter extends BaseAdapter implements Filterable {
 	}
 
 	private static class ViewHolder {
-		public final ImageView arrowView;
+//		public final ImageView arrowView;
 		public final TextView titleView;
 		public final TextView subTitleView;
 
-		public ViewHolder(ImageView arrowView, TextView titleView,
+		public ViewHolder(/* ImageView arrowView, */ TextView titleView,
 				TextView subTitleView) {
-			this.arrowView = arrowView;
+//			this.arrowView = arrowView;
 			this.titleView = titleView;
 			this.subTitleView = subTitleView;
 		}

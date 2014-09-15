@@ -1,6 +1,5 @@
 package net.fosstveit.atbuss.utils;
 
-import net.fosstveit.atbuss.MainActivity;
 import net.fosstveit.atbuss.objects.BusEvent;
 import net.fosstveit.atbuss.objects.BusRoute;
 

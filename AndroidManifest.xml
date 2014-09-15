@@ -13,15 +13,15 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".AtBussApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light"
-        android:name="AtBussApplication" >
+        android:theme="@style/Theme.Sherlock.Light" >
         <activity
-            android:name="net.fosstveit.atbuss.MainActivity"
-            android:label="@string/title_activity_main"
-            android:configChanges="keyboardHidden|orientation" >
+            android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,42 +29,49 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.fosstveit.atbuss.BusStopActivity"
+            android:name=".BusStopActivity"
             android:label="@string/title_activity_bus_stop" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.fosstveit.atbuss.MainActivity" />
         </activity>
         <activity
-            android:name="net.fosstveit.atbuss.SearchActivity"
+            android:name=".SearchActivity"
             android:label="@string/title_activity_search" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.fosstveit.atbuss.MainActivity" />
         </activity>
         <activity
-            android:name="net.fosstveit.atbuss.BusEventActivity"
+            android:name=".BusEventActivity"
             android:label="@string/title_activity_bus_event" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.fosstveit.atbuss.BusStopActivity" />
         </activity>
         <activity
-            android:name="net.fosstveit.atbuss.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.fosstveit.atbuss.MainActivity" />
         </activity>
         <activity
-            android:name="net.fosstveit.atbuss.AskOracleActivity"
+            android:name=".AskOracleActivity"
             android:label="@string/title_activity_ask_oracle" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.fosstveit.atbuss.MainActivity" />
         </activity>
+        <activity
+            android:name=".UpdateActivity"
+            android:label="@string/title_activity_update" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.fosstveit.atbuss.MainActivity" />
+        </activity>
 
-        <receiver android:name="net.fosstveit.atbuss.utils.BusEventAlarm" />
+        <receiver android:name=".utils.BusEventAlarm" />
     </application>
 
 </manifest>
