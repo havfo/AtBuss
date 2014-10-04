@@ -63,13 +63,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.fosstveit.atbuss.MainActivity" />
         </activity>
-        <activity
-            android:name=".UpdateActivity"
-            android:label="@string/title_activity_update" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.fosstveit.atbuss.MainActivity" />
-        </activity>
 
         <receiver android:name=".utils.BusEventAlarm" />
     </application>

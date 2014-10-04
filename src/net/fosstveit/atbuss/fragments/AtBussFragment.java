@@ -3,7 +3,6 @@ package net.fosstveit.atbuss.fragments;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import net.fosstveit.atbuss.AtBussApplication;
 import net.fosstveit.atbuss.BusStopActivity;

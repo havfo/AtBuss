@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import net.fosstveit.atbuss.interfaces.OnLoadDataListener;
 import net.fosstveit.atbuss.managers.AtBussDataManager;
-import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.Utils;
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -60,7 +59,7 @@ public class AtBussApplication extends Application {
 			new PopulateBusStops().execute();
 			sharedPrefs.edit().putBoolean("my_first_time", false).commit();
 		} else {
-			hasData = true;
+			new PopulateBusStops().execute();
 			onDataUpdate();
 		}
 	}
@@ -73,9 +72,21 @@ public class AtBussApplication extends Application {
 
 		@Override
 		protected String doInBackground(final String... args) {
-			dataManager.clearBusStops();
-			dataManager.addBusStops(Utils.getBusStops());
-			dataManager.addVersion("" + Utils.getVersion());
+			if (firstRun) {
+				dataManager.clearBusStops();
+				dataManager.addBusStops(Utils.getBusStops());
+				dataManager.addVersion("" + Utils.getVersion());
+				firstRun = false;
+			} else {
+				int version = dataManager.getLatestVersion();
+				int latest = Utils.getVersion();
+				
+				if (latest != -1 && latest > version) {
+					dataManager.clearBusStops();
+					dataManager.addBusStops(Utils.getBusStops());
+					dataManager.addVersion("" + Utils.getVersion());
+				}
+			}
 
 			hasData = true;
 			return "Done";
@@ -83,10 +94,6 @@ public class AtBussApplication extends Application {
 
 		@Override
 		protected void onPostExecute(String result) {
-			if (firstRun) {
-				firstRun = false;
-			}
-
 			onDataUpdate();
 		}
 	}

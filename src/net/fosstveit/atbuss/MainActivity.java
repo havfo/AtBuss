@@ -1,5 +1,6 @@
 package net.fosstveit.atbuss;
 
+import net.fosstveit.atbuss.interfaces.OnLoadDataListener;
 import net.fosstveit.atbuss.utils.AtBussViewPagerAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -9,13 +10,15 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends SherlockFragmentActivity implements
+OnLoadDataListener {
 
 	public final static String BUS_STOP_ID = "net.fosstveit.atbuss.BUSSTOPID";
 	public final static String BUS_STOP_NAME = "net.fosstveit.atbuss.BUSSTOPNAME";
@@ -27,6 +30,9 @@ public class MainActivity extends SherlockFragmentActivity {
 	private ViewPager mPager;
 	private Tab tab;
 
+	private AtBussApplication app = null;
+	ProgressDialog progress = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,6 +40,8 @@ public class MainActivity extends SherlockFragmentActivity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
 
+		app = (AtBussApplication) getApplication();
+		
 		mActionBar = getSupportActionBar();
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -78,6 +86,13 @@ public class MainActivity extends SherlockFragmentActivity {
 		tab = mActionBar.newTab().setText("Mest brukte")
 				.setTabListener(tabListener);
 		mActionBar.addTab(tab);
+		
+		if (!app.hasData()) {
+			app.addDataListener(this);
+			progress = new ProgressDialog(this);
+			progress.setMessage("Laster ned nye stopp...");
+			progress.show();
+		}
 	}
 
 	@Override
@@ -111,5 +126,10 @@ public class MainActivity extends SherlockFragmentActivity {
 	public void search() {
 		Intent intent = new Intent(MainActivity.this, SearchActivity.class);
 		startActivity(intent);
+	}
+
+	@Override
+	public void onLoadData() {
+		progress.dismiss();
 	}
 }
