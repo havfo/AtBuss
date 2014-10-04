@@ -157,8 +157,8 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 		
 		int i = 0;
 
-		for (int lati = -distanceLoop; lati < distanceLoop; lati++) {
-			for (int loni = -distanceLoop; loni < distanceLoop; loni++) {
+		for (int lati = -distanceLoop; lati <= distanceLoop; lati++) {
+			for (int loni = -distanceLoop; loni <= distanceLoop; loni++) {
 				
 				if (i > 0) {
 					where += " or ";
@@ -166,8 +166,8 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 					i++;
 				}
 				
-				where += "latitudeindex = " + (latindex + lati) + " and longitudeindex = "
-						+ (lonindex + loni);
+				where += "(latitudeindex = " + (latindex + lati) + " and longitudeindex = "
+						+ (lonindex + loni) + ")";
 			}
 		}
 		

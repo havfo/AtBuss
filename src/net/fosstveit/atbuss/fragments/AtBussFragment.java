@@ -173,22 +173,22 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 			gpsManager = null;
 		}
 	}
-	
+
 	private int getLatitudeIndex(double latitude) {
 		double lats = 0.0045;
 		double latst = 62.50;
-		
+
 		int latind = (int) ((latitude - latst) / lats);
-		
+
 		return latind;
 	}
-	
+
 	private int getLongitudeIndex(double longitude) {
 		double lons = 0.01;
 		double lonst = 8.50;
-		
+
 		int lonind = (int) ((longitude - lonst) / lons);
-		
+
 		return lonind;
 	}
 
@@ -223,13 +223,15 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 				double distanceLimit = Integer.parseInt(app.getSharedPrefs()
 						.getString("Distance", "500"));
 
-				stops = app.getDataManager().getBusStopsInRange(getLatitudeIndex(currentLat),
-						getLongitudeIndex(currentLon), distanceLimit);
+				int latind = getLatitudeIndex(currentLat);
+				int lonind = getLongitudeIndex(currentLon);
+
+				stops = app.getDataManager().getBusStopsInRange(latind, lonind,
+						distanceLimit);
 
 				for (BusStop b : stops) {
 					double distance = calcGeoDistance(currentLat, currentLon,
 							b.getLatitude(), b.getLongitude());
-
 					b.setDistance((int) distance);
 				}
 			}
