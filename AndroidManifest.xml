@@ -3,7 +3,7 @@
     package="net.fosstveit.atbuss"
     android:installLocation="auto"
     android:versionCode="14"
-    android:versionName="1.5" >
+    android:versionName="2.0" >
 
     <uses-sdk
         android:minSdkVersion="7"
