@@ -173,23 +173,23 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 		}
 	}
 
-	private int getLatitudeIndex(double latitude) {
-		double lats = 0.0045;
-		double latst = 62.50;
-
-		int latind = (int) ((latitude - latst) / lats);
-
-		return latind;
-	}
-
-	private int getLongitudeIndex(double longitude) {
-		double lons = 0.01;
-		double lonst = 8.50;
-
-		int lonind = (int) ((longitude - lonst) / lons);
-
-		return lonind;
-	}
+	// private int getLatitudeIndex(double latitude) {
+	// double lats = 0.0045;
+	// double latst = 62.50;
+	//
+	// int latind = (int) ((latitude - latst) / lats);
+	//
+	// return latind;
+	// }
+	//
+	// private int getLongitudeIndex(double longitude) {
+	// double lons = 0.01;
+	// double lonst = 8.50;
+	//
+	// int lonind = (int) ((longitude - lonst) / lons);
+	//
+	// return lonind;
+	// }
 
 	// private void startCompass() {
 	// if (compassManager == null) {
@@ -222,11 +222,8 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 				double distanceLimit = Integer.parseInt(app.getSharedPrefs()
 						.getString("Distance", "500"));
 
-				int latind = getLatitudeIndex(currentLat);
-				int lonind = getLongitudeIndex(currentLon);
-
-				stops = app.getDataManager().getBusStopsInRange(latind, lonind,
-						distanceLimit);
+				stops = app.getDataManager().getBusStopsInRange(currentLat,
+						currentLon, distanceLimit);
 
 				for (BusStop b : stops) {
 					double distance = calcGeoDistance(currentLat, currentLon,

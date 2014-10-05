@@ -19,19 +19,14 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 	private static final String STOPS_KEY_NAME = "name";
 	private static final String STOPS_KEY_LATITUDE = "latitude";
 	private static final String STOPS_KEY_LONGITUDE = "longitude";
-	private static final String STOPS_KEY_LATITUDE_INDEX = "latitudeindex";
-	private static final String STOPS_KEY_LONGITUDE_INDEX = "longitudeindex";
 	private static final String STOPS_KEY_NUMUSED = "numused";
 	private static final String[] STOPS_COLUMNS = { STOPS_KEY_ID,
 			STOPS_KEY_NAME, STOPS_KEY_LATITUDE, STOPS_KEY_LONGITUDE,
-			STOPS_KEY_LATITUDE_INDEX, STOPS_KEY_LONGITUDE_INDEX,
 			STOPS_KEY_NUMUSED };
 	private static final String CREATE_STOPS_TABLE = "CREATE TABLE "
 			+ TABLE_STOPS + " (" + STOPS_KEY_ID + " INTEGER PRIMARY KEY, "
 			+ STOPS_KEY_NAME + " TEXT, " + STOPS_KEY_LATITUDE + " REAL, "
-			+ STOPS_KEY_LONGITUDE + " REAL, " + STOPS_KEY_LATITUDE_INDEX
-			+ " INTEGER, " + STOPS_KEY_LONGITUDE_INDEX + " INTEGER, "
-			+ STOPS_KEY_NUMUSED + " INTEGER)";
+			+ STOPS_KEY_LONGITUDE + " REAL, " + STOPS_KEY_NUMUSED + " INTEGER)";
 
 	private static final String TABLE_VERSION = "version";
 	private static final String VERSION_KEY_ID = "id";
@@ -67,8 +62,6 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 		values.put(STOPS_KEY_NAME, stop.getName());
 		values.put(STOPS_KEY_LATITUDE, stop.getLatitude());
 		values.put(STOPS_KEY_LONGITUDE, stop.getLongitude());
-		values.put(STOPS_KEY_LATITUDE_INDEX, stop.getLatitudeindex());
-		values.put(STOPS_KEY_LONGITUDE_INDEX, stop.getLongitudeindex());
 		values.put(STOPS_KEY_NUMUSED, 0);
 		db.insert(TABLE_STOPS, null, values);
 		db.close();
@@ -84,8 +77,6 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 			values.put(STOPS_KEY_NAME, tmp[1]);
 			values.put(STOPS_KEY_LATITUDE, tmp[2]);
 			values.put(STOPS_KEY_LONGITUDE, tmp[3]);
-			values.put(STOPS_KEY_LATITUDE_INDEX, tmp[4]);
-			values.put(STOPS_KEY_LONGITUDE_INDEX, tmp[5]);
 			values.put(STOPS_KEY_NUMUSED, 0);
 			db.insert(TABLE_STOPS, null, values);
 			values.clear();
@@ -146,31 +137,18 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 		}
 	}
 
-	public ArrayList<BusStop> getBusStopsInRange(int latindex, int lonindex,
-			double dist) {
+	public ArrayList<BusStop> getBusStopsInRange(double latitude,
+			double longitude, double dist) {
 		ArrayList<BusStop> stops = new ArrayList<BusStop>();
 		SQLiteDatabase db = this.getReadableDatabase();
+		
+		double delta = dist / 500.0;
 
-		int distanceLoop = (int) (dist / 500);
-		
-		String where = "";
-		
-		int i = 0;
+		String where = "(latitude > " + (latitude - (0.0045 * delta))
+				+ ") and (latitude < " + (latitude + (0.0045 * delta))
+				+ ") and (longitude > " + (longitude - (0.01 * delta))
+				+ ") and (longitude < " + (longitude + (0.01 * delta)) + ")";
 
-		for (int lati = -distanceLoop; lati <= distanceLoop; lati++) {
-			for (int loni = -distanceLoop; loni <= distanceLoop; loni++) {
-				
-				if (i > 0) {
-					where += " or ";
-				} else {
-					i++;
-				}
-				
-				where += "(latitudeindex = " + (latindex + lati) + " and longitudeindex = "
-						+ (lonindex + loni) + ")";
-			}
-		}
-		
 		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, where, null, null,
 				null, STOPS_KEY_NUMUSED + " DESC", null);
 		BusStop stop = null;

@@ -10,10 +10,6 @@ public class BusStop {
 
 	private double longitude;
 
-	private int latitudeindex;
-	
-	private int longitudeindex;
-
 	private int distance = 0;
 
 //	private int direction = 0;
@@ -58,22 +54,6 @@ public class BusStop {
 
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
-	}
-	
-	public int getLatitudeindex() {
-		return latitudeindex;
-	}
-
-	public void setLatitudeindex(int latitudeindex) {
-		this.latitudeindex = latitudeindex;
-	}
-
-	public int getLongitudeindex() {
-		return longitudeindex;
-	}
-
-	public void setLongitudeindex(int longitudeindex) {
-		this.longitudeindex = longitudeindex;
 	}
 
 	public int getDistance() {
