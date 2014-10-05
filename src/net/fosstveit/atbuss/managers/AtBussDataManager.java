@@ -191,7 +191,7 @@ public class AtBussDataManager extends SQLiteOpenHelper {
 	public ArrayList<BusStop> getMostUsedBusStops(int count) {
 		ArrayList<BusStop> stops = new ArrayList<BusStop>();
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, null, null, null,
+		Cursor cursor = db.query(TABLE_STOPS, STOPS_COLUMNS, "numused > 0", null, null,
 				null, STOPS_KEY_NUMUSED + " DESC", "" + count);
 		BusStop stop = null;
 		if (cursor != null && cursor.moveToFirst()) {
