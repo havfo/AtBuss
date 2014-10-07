@@ -2,8 +2,12 @@ AtBuss is an Android app for showing real time info about buses in Trondheim, No
 
 Android API version 7 (2.1) and up are supported.
 
-To build it, you need json-simple:
-http://code.google.com/p/json-simple/
+To clone it:
 
-And ActionBarSherlock:
+1. Download Android Studio
+2. Select "Check out from Version Control" -> GitHub
+3. Select "Use default gradle wrapper (recommended)" -> OK
+
+Dependencies are handled automatically, but are:
+http://code.google.com/p/json-simple/
 http://actionbarsherlock.com/
