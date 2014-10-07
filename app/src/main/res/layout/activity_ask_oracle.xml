@@ -1,0 +1,35 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/ask_oracle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/ask_oracle" />
+
+    <EditText
+        android:id="@+id/ask_oracle_box"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/ask_oracle"
+        android:hint="@string/ask_oracle_hint"
+        android:inputType="text"
+        android:maxLines="1">
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/oracle_answer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ask_oracle_box"
+        android:padding="14sp"
+        android:textSize="18sp" />
+
+</RelativeLayout>
