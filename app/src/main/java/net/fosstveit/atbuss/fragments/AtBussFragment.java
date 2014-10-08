@@ -218,7 +218,6 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 
 		@Override
 		protected String doInBackground(String... params) {
-			if (app.hasData()) {
 				double distanceLimit = Integer.parseInt(app.getSharedPrefs()
 						.getString("Distance", "500"));
 
@@ -230,7 +229,6 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 							b.getLatitude(), b.getLongitude());
 					b.setDistance((int) distance);
 				}
-			}
 			return "Done";
 		}
 

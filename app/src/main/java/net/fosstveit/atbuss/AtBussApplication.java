@@ -19,8 +19,6 @@ public class AtBussApplication extends Application {
 
 	private boolean firstRun = false;
 
-	// private ArrayList<BusStop> busStops;
-
 	private SharedPreferences sharedPrefs;
 
 	private boolean hasData = false;
@@ -57,10 +55,8 @@ public class AtBussApplication extends Application {
 		if (sharedPrefs.getBoolean("my_first_time", true)) {
 			firstRun = true;
 			new PopulateBusStops().execute();
-			sharedPrefs.edit().putBoolean("my_first_time", false).commit();
 		} else {
 			new PopulateBusStops().execute();
-			onDataUpdate();
 		}
 	}
 
@@ -73,9 +69,15 @@ public class AtBussApplication extends Application {
 		@Override
 		protected String doInBackground(final String... args) {
 			if (firstRun) {
-				dataManager.clearBusStops();
-				dataManager.addBusStops(Utils.getBusStops());
-				dataManager.addVersion("" + Utils.getVersion());
+                String[] tmp = Utils.getBusStops();
+
+                if (tmp != null && tmp.length > 0) {
+                    dataManager.clearBusStops();
+                    dataManager.addBusStops(Utils.getBusStops());
+                    dataManager.addVersion("" + Utils.getVersion());
+                    sharedPrefs.edit().putBoolean("my_first_time", false).commit();
+                    hasData = true;
+                }
 				firstRun = false;
 			} else {
 				int version = dataManager.getLatestVersion();
@@ -86,9 +88,10 @@ public class AtBussApplication extends Application {
 					dataManager.addBusStops(Utils.getBusStops());
 					dataManager.addVersion("" + Utils.getVersion());
 				}
+
+                hasData = true;
 			}
 
-			hasData = true;
 			return "Done";
 		}
 
@@ -102,26 +105,6 @@ public class AtBussApplication extends Application {
 		return dataManager;
 	}
 
-	public void setDataManager(AtBussDataManager dataManager) {
-		this.dataManager = dataManager;
-	}
-
-	public boolean isFirstRun() {
-		return firstRun;
-	}
-
-	public void setFirstRun(boolean firstRun) {
-		this.firstRun = firstRun;
-	}
-
-	// public ArrayList<BusStop> getBusStops() {
-	// return busStops;
-	// }
-	//
-	// public void setBusStops(ArrayList<BusStop> busStops) {
-	// this.busStops = busStops;
-	// }
-
 	public SharedPreferences getSharedPrefs() {
 		return sharedPrefs;
 	}
@@ -132,10 +115,6 @@ public class AtBussApplication extends Application {
 
 	public boolean hasData() {
 		return hasData;
-	}
-
-	public void setHasData(boolean hasData) {
-		this.hasData = hasData;
 	}
 
 }

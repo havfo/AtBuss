@@ -18,7 +18,7 @@ public class GPSManager {
 	private LocationListener locationListener = null;
 	private GPSCallback gpsCallback = null;
 
-	private Location currentBestLocation;
+	private Location currentBestLocation = null;
 
 	public GPSManager() {
 		locationListener = new LocationListener() {
@@ -124,6 +124,10 @@ public class GPSManager {
 
 	public void setGPSCallback(final GPSCallback gpsCallback) {
 		this.gpsCallback = gpsCallback;
+
+        if (currentBestLocation != null && gpsCallback != null) {
+            gpsCallback.onGPSUpdate(currentBestLocation);
+        }
 	}
 
 	public GPSCallback getGPSCallback() {
