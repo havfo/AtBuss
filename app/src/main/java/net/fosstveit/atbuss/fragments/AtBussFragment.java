@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +26,7 @@ import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RelativeLayout;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
-public class AtBussFragment extends SherlockFragment implements GPSCallback /*
+public class AtBussFragment extends Fragment implements GPSCallback /*
 																			 * ,
 																			 * CompassCallback
 																			 */{
@@ -58,7 +57,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
 		listSelectStop.setOnItemClickListener(busStopSelected);
 
-		busStopAdapter = new BusStopAdapter(getSherlockActivity());
+		busStopAdapter = new BusStopAdapter(getActivity());
 		listSelectStop.setAdapter(busStopAdapter);
 
 		return rl;
@@ -68,10 +67,10 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+		getActivity().setProgressBarIndeterminateVisibility(
 				Boolean.TRUE);
 
-		app = (AtBussApplication) getSherlockActivity().getApplication();
+		app = (AtBussApplication) getActivity().getApplication();
 
 		startGPS();
 		// startCompass();
@@ -125,7 +124,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 	private OnItemClickListener busStopSelected = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> av, View v, int i, long l) {
-			Intent intent = new Intent(getSherlockActivity(),
+			Intent intent = new Intent(getActivity(),
 					BusStopActivity.class);
 			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
 
@@ -159,7 +158,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 		if (gpsManager == null) {
 			gpsManager = new GPSManager();
 
-			gpsManager.startListening(getSherlockActivity());
+			gpsManager.startListening(getActivity());
 			gpsManager.setGPSCallback(this);
 		}
 	}
@@ -212,7 +211,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 	private class GetBusStops extends AsyncTask<String, Void, String> {
 		@Override
 		protected void onPreExecute() {
-			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+			getActivity().setProgressBarIndeterminateVisibility(
 					Boolean.TRUE);
 		}
 
@@ -243,7 +242,7 @@ public class AtBussFragment extends SherlockFragment implements GPSCallback /*
 
 			busStopAdapter.updateBusStops(stops);
 
-			getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+			getActivity().setProgressBarIndeterminateVisibility(
 					Boolean.FALSE);
 		}
 	}

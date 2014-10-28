@@ -2,6 +2,8 @@ package net.fosstveit.atbuss;
 
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,10 +19,7 @@ import net.fosstveit.atbuss.utils.BusEventAlarm;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
-
-public class BusEventActivity extends SherlockActivity {
+public class BusEventActivity extends ActionBarActivity {
 
 	private String stopName = "";
 	private String routeName = "";

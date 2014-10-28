@@ -3,8 +3,6 @@ package net.fosstveit.atbuss.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
 import net.fosstveit.atbuss.AtBussApplication;
 import net.fosstveit.atbuss.BusStopActivity;
 import net.fosstveit.atbuss.MainActivity;
@@ -15,6 +13,7 @@ import net.fosstveit.atbuss.utils.BusStopAdapter;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class MostUsedFragment extends SherlockFragment implements
+public class MostUsedFragment extends Fragment implements
 		OnLoadDataListener {
 	private ListView listSelectStop;
 	private BusStopAdapter busStopAdapter;
@@ -41,7 +40,7 @@ public class MostUsedFragment extends SherlockFragment implements
 		listSelectStop = (ListView) rl.findViewById(R.id.listSelectStop);
 		listSelectStop.setOnItemClickListener(busStopSelected);
 		
-		busStopAdapter = new BusStopAdapter(getSherlockActivity());
+		busStopAdapter = new BusStopAdapter(getActivity());
 		listSelectStop.setAdapter(busStopAdapter);
 
 		return rl;
@@ -51,7 +50,7 @@ public class MostUsedFragment extends SherlockFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		app = (AtBussApplication) getSherlockActivity().getApplication();
+		app = (AtBussApplication) getActivity().getApplication();
 
 		if (!app.hasData()) {
 			app.addDataListener(this);
@@ -63,7 +62,7 @@ public class MostUsedFragment extends SherlockFragment implements
 	private OnItemClickListener busStopSelected = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> av, View v, int i, long l) {
-			Intent intent = new Intent(getSherlockActivity(),
+			Intent intent = new Intent(getActivity(),
 					BusStopActivity.class);
 			BusStop b = (BusStop) listSelectStop.getItemAtPosition(i);
 

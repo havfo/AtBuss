@@ -1,14 +1,13 @@
 package net.fosstveit.atbuss;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +18,7 @@ import net.fosstveit.atbuss.R.id;
 import net.fosstveit.atbuss.R.layout;
 import net.fosstveit.atbuss.utils.Utils;
 
-public class AskOracleActivity extends SherlockActivity {
+public class AskOracleActivity extends ActionBarActivity {
 
 	private EditText oracleQuestion = null;
 	private Button oracleAsk = null;

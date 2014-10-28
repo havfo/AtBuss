@@ -3,8 +3,6 @@ package net.fosstveit.atbuss.fragments;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
 import net.fosstveit.atbuss.AtBussApplication;
 import net.fosstveit.atbuss.BusEventActivity;
 import net.fosstveit.atbuss.MainActivity;
@@ -16,6 +14,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class BusStopFragment extends SherlockFragment {
+public class BusStopFragment extends Fragment {
 	private ListView listSelectEvent;
 	private BusEventEntryAdapter busEventEntryAdapter;
 	private String stopName;
@@ -35,7 +34,7 @@ public class BusStopFragment extends SherlockFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+		getActivity().setProgressBarIndeterminateVisibility(
 				Boolean.TRUE);
 
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
@@ -44,7 +43,7 @@ public class BusStopFragment extends SherlockFragment {
 		listSelectEvent = (ListView) rl.findViewById(R.id.listBusEvents);
 		listSelectEvent.setOnItemClickListener(busEventSelected);
 
-		busEventEntryAdapter = new BusEventEntryAdapter(getSherlockActivity(),
+		busEventEntryAdapter = new BusEventEntryAdapter(getActivity(),
 				R.layout.bus_stop_list_item);
 		listSelectEvent.setAdapter(busEventEntryAdapter);
 
@@ -55,10 +54,10 @@ public class BusStopFragment extends SherlockFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		Bundle extras = getSherlockActivity().getIntent().getExtras();
+		Bundle extras = getActivity().getIntent().getExtras();
 		if (extras != null) {
 			stopName = (String) extras.get(MainActivity.BUS_STOP_NAME);
-			getSherlockActivity().setTitle(stopName);
+			getActivity().setTitle(stopName);
 			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
 		}
 		
@@ -74,7 +73,7 @@ public class BusStopFragment extends SherlockFragment {
 	private OnItemClickListener busEventSelected = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> av, View v, int i, long l) {
-			Intent intent = new Intent(getSherlockActivity(),
+			Intent intent = new Intent(getActivity(),
 					BusEventActivity.class);
 			BusEvent b = (BusEvent) listSelectEvent.getItemAtPosition(i);
 
@@ -116,12 +115,12 @@ public class BusStopFragment extends SherlockFragment {
 
 		@Override
 		protected void onPreExecute() {
-			getSherlockActivity().setProgressBarIndeterminateVisibility(Boolean.TRUE);
+			getActivity().setProgressBarIndeterminateVisibility(Boolean.TRUE);
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			int numStops = Integer.parseInt(((AtBussApplication) (getSherlockActivity()).getApplicationContext()).getSharedPrefs().getString(
+			int numStops = Integer.parseInt(((AtBussApplication) (getActivity()).getApplicationContext()).getSharedPrefs().getString(
 					"Sanntidsdata", "15"));
 			events = Utils.getBusTime(stopId, numStops);
 			return "Done";
@@ -140,7 +139,7 @@ public class BusStopFragment extends SherlockFragment {
 						"", 0));
 			}
 
-			getSherlockActivity().setProgressBarIndeterminateVisibility(Boolean.FALSE);
+			getActivity().setProgressBarIndeterminateVisibility(Boolean.FALSE);
 		}
 	}
 }

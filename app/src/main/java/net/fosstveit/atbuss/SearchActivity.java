@@ -1,13 +1,12 @@
 package net.fosstveit.atbuss;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,7 +17,7 @@ import net.fosstveit.atbuss.R;
 import net.fosstveit.atbuss.objects.BusStop;
 import net.fosstveit.atbuss.utils.BusStopAdapter;
 
-public class SearchActivity extends SherlockActivity {
+public class SearchActivity extends ActionBarActivity {
 
 	private EditText filterText = null;
 	private ListView searchList = null;

@@ -11,6 +11,7 @@ import net.fosstveit.atbuss.utils.Utils;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
-public class BusStopInfoFragment extends SherlockFragment {
+public class BusStopInfoFragment extends Fragment {
 	private ListView listSelectRoutes;
 	private BusRouteAdapter busRouteAdapter;
 	private int stopId;
@@ -29,7 +28,7 @@ public class BusStopInfoFragment extends SherlockFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		getSherlockActivity().setSupportProgressBarIndeterminateVisibility(
+		getActivity().setProgressBarIndeterminateVisibility(
 				Boolean.TRUE);
 
 		RelativeLayout rl = (RelativeLayout) inflater.inflate(
@@ -38,7 +37,7 @@ public class BusStopInfoFragment extends SherlockFragment {
 		listSelectRoutes = (ListView) rl.findViewById(R.id.listBusRoutes);
 		listSelectRoutes.setOnItemClickListener(busRouteSelected);
 
-		busRouteAdapter = new BusRouteAdapter(getSherlockActivity());
+		busRouteAdapter = new BusRouteAdapter(getActivity());
 		listSelectRoutes.setAdapter(busRouteAdapter);
 
 		return rl;
@@ -48,7 +47,7 @@ public class BusStopInfoFragment extends SherlockFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		Bundle extras = getSherlockActivity().getIntent().getExtras();
+		Bundle extras = getActivity().getIntent().getExtras();
 		if (extras != null) {
 			stopId = (int) extras.getInt(MainActivity.BUS_STOP_ID);
 		}
@@ -79,7 +78,7 @@ public class BusStopInfoFragment extends SherlockFragment {
 
 		@Override
 		protected void onPreExecute() {
-			getSherlockActivity().setProgressBarIndeterminateVisibility(
+			getActivity().setProgressBarIndeterminateVisibility(
 					Boolean.TRUE);
 		}
 
@@ -97,7 +96,7 @@ public class BusStopInfoFragment extends SherlockFragment {
 				busRouteAdapter.updateBusRoutes(new ArrayList<BusRoute>());
 			}
 
-			getSherlockActivity().setProgressBarIndeterminateVisibility(
+			getActivity().setProgressBarIndeterminateVisibility(
 					Boolean.FALSE);
 		}
 	}

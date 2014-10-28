@@ -7,19 +7,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-
-public class BusStopActivity extends SherlockFragmentActivity {
+public class BusStopActivity extends ActionBarActivity {
 
 	private ActionBar mActionBar;
 	private ViewPager mPager;
-	private Tab tab;
+	private ActionBar.Tab tab;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +48,16 @@ public class BusStopActivity extends SherlockFragmentActivity {
 		// Capture tab button clicks
 		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
 			@Override
-			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 				mPager.setCurrentItem(tab.getPosition());
 			}
 
 			@Override
-			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
 			}
 
 			@Override
-			public void onTabReselected(Tab tab, FragmentTransaction ft) {
+			public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 			}
 		};
 
@@ -86,7 +84,7 @@ public class BusStopActivity extends SherlockFragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_bus_stop, menu);
+		getMenuInflater().inflate(R.menu.activity_bus_stop, menu);
 		return true;
 	}
 }

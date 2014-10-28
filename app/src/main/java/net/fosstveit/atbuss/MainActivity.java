@@ -3,21 +3,19 @@ package net.fosstveit.atbuss;
 import net.fosstveit.atbuss.interfaces.OnLoadDataListener;
 import net.fosstveit.atbuss.utils.AtBussViewPagerAdapter;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
 
-public class MainActivity extends SherlockFragmentActivity implements
+public class MainActivity extends ActionBarActivity implements
 OnLoadDataListener {
 
 	public final static String BUS_STOP_ID = "net.fosstveit.atbuss.BUSSTOPID";
@@ -28,7 +26,7 @@ OnLoadDataListener {
 
 	private ActionBar mActionBar;
 	private ViewPager mPager;
-	private Tab tab;
+	private ActionBar.Tab tab;
 
 	private AtBussApplication app = null;
 	ProgressDialog progress = null;
@@ -64,16 +62,16 @@ OnLoadDataListener {
 		// Capture tab button clicks
 		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
 			@Override
-			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 				mPager.setCurrentItem(tab.getPosition());
 			}
 
 			@Override
-			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
 			}
 
 			@Override
-			public void onTabReselected(Tab tab, FragmentTransaction ft) {
+			public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 			}
 		};
 
@@ -97,7 +95,7 @@ OnLoadDataListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_at_buss, menu);
+		getMenuInflater().inflate(R.menu.activity_at_buss, menu);
 		return true;
 	}
 
@@ -110,10 +108,6 @@ OnLoadDataListener {
 		case R.id.menu_oracle:
 			askOracle();
 			return true;
-		case R.id.menu_settings:
-			Intent intent = new Intent(MainActivity.this,
-					SettingsActivity.class);
-			startActivity(intent);
 		}
 		return super.onOptionsItemSelected(item);
 	}
