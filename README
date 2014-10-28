@@ -10,4 +10,5 @@ To clone it:
 
 Dependencies are handled automatically, but are:
 http://code.google.com/p/json-simple/
-http://actionbarsherlock.com/
+support-library-v4
+support-library-v7-appcompat
